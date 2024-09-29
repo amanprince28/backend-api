@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { CustomerService } from './customer.service';
 import { CreateCustomerDto, UpdateCustomerDto } from './customer.dto';
 
@@ -12,8 +12,12 @@ export class CustomerController {
   }
 
   @Get()
-  async findAll() {
-    return this.customerService.findAll();
+  async findAll(
+    @Query('skip') skip: number = 0,
+    @Query('take') take: number = 10,
+    @Query('filter') filter: any
+  ) {
+    return this.customerService.findAll(Number(skip), Number(take), filter);
   }
 
   @Get(':id')
