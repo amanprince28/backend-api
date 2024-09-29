@@ -4,86 +4,92 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  extensions = [pgcrypto]
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pgcrypto, uuid_ossp(map: "uuid-ossp", schema: "public")]
 }
 
 model customer {
-  id                String              @id(map: "customer_pk") @db.Uuid @default(uuid())
-  name              String?             @db.VarChar(100)
+  id                String              @id(map: "customer_pk") @default(uuid()) @db.Uuid
+  car_plate         String?             @map("car-plate") @db.VarChar(50)
+  email             String?             @db.VarChar(100)
+  gender            String?             @db.VarChar(10)
   ic                String?             @db.VarChar(100)
+  marital_status    String?             @map("marital-status") @db.VarChar(10)
+  mobile_no         String?             @map("mobile-no") @db.VarChar(12)
+  name              String?             @db.VarChar(100)
+  no_of_child       Int?                @map("no-of-child")
   passport          String?             @db.VarChar(100)
   race              String?             @db.VarChar(100)
-  gender            String?             @db.VarChar(10)
-  marital_status    String?             @map("marital-status") @db.VarChar(10)
-  no_of_child       BigInt?             @map("no-of-child")
-  mobile_no         String?             @map("mobile-no") @db.VarChar(12)
   tel_code          String?             @map("tel-code") @db.VarChar(5)
   tel_no            String?             @map("tel-no") @db.VarChar(10)
-  email             String?             @db.VarChar(100)
-  car_plate         String?             @map("car-plate") @db.VarChar(50)
-  address           address[]
+  customer_address  address[]
   customer_relation customer_relation[]
 }
 
 model address {
-  id                  String             @id(map: "address_pk") @db.Uuid @default(uuid())
-  address             String?            @db.VarChar(255)
-  city                String?            @db.VarChar(100)
-  state               String?            @db.VarChar(100)
-  postal_code         String?            @map("postal-code") @db.VarChar(100)
-  country             String?            @db.VarChar(100)
-  remark              String?            @db.VarChar(255)
-  staying_since       String?            @map("staying-since") @db.VarChar(10)
-  is_permanent        Boolean?           @default(false) @map("is-permanent")
+  id                  String             @id(map: "address_pk") @default(uuid()) @db.Uuid
   customer_id         String?            @map("customer-id") @db.Uuid
   cutomer_relation_id String?            @map("cutomer-relation-id") @db.Uuid
+  is_permanent        Boolean?           @default(false) @map("is-permanent")
+  postal_code         String?            @map("postal-code") @db.VarChar(100)
+  remark              String?            @db.VarChar(255)
+  staying_since       String?            @map("staying-since") @db.VarChar(10)
+  address_lines       String?            @map("address-lines")
+  city_id             String?            @map("city-id") @db.Uuid
+  country_id          String?            @map("country-id") @db.Uuid
+  state_id            String?            @map("state-id") @db.Uuid
+  city                city?              @relation(fields: [city_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "address_city_fk")
+  country             country?           @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "address_country_fk")
   customer            customer?          @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "address_customer_fk")
   customer_relation   customer_relation? @relation(fields: [cutomer_relation_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "address_customer_relation_fk")
+  state               state?             @relation(fields: [state_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "address_state_fk")
 }
 
 model customer_relation {
-  id          String    @id(map: "customer_relation_pk") @db.Uuid @default(uuid())
+  id          String    @id(map: "customer_relation_pk") @default(uuid()) @db.Uuid
   customer_id String?   @map("customer-id") @db.Uuid
   address     address[]
   customer    customer? @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "customer_relation_customer_fk")
 }
 
 model company {
-  id                  String  @id(map: "company_pk") @db.Uuid @default(uuid())
-  name                String? @db.VarChar(100)
-  employee_type       String? @map("employee-type") @db.VarChar(100)
-  employee_no         String? @map("employee-no") @db.VarChar(100)
+  id                  String  @id(map: "company_pk") @default(uuid()) @db.Uuid
+  annual_income       String? @map("annual-income") @db.VarChar(100)
   business_type       String? @map("business-type") @db.VarChar(100)
-  occupation_category String? @map("occupation-category") @db.VarChar(100)
   department          String? @db.VarChar(100)
+  employee_no         String? @map("employee-no") @db.VarChar(100)
+  employee_type       String? @map("employee-type") @db.VarChar(100)
+  income_date         String? @map("income-date") @db.VarChar(5)
+  income_type         String? @map("income-type") @db.VarChar(50)
+  name                String? @db.VarChar(100)
+  occupation_category String? @map("occupation-category") @db.VarChar(100)
   position            String? @db.VarChar(100)
+  remark              String?
   tel_code            String? @map("tel-code") @db.VarChar(10)
   tel_no              String? @map("tel-no") @db.VarChar(12)
-  income_type         String? @map("income-type") @db.VarChar(50)
-  income_date         String? @map("income-date") @db.VarChar(5)
-  annual_income       String? @map("annual-income") @db.VarChar(100)
-  remark              String?
 }
 
 model country {
-  id     String  @id(map: "country_pk") @db.Uuid @default(uuid())
-  name   String  @db.VarChar(100)
-  states state[]
+  id      String    @id(map: "country_pk") @default(uuid()) @db.Uuid
+  name    String    @db.VarChar(100)
+  address address[]
+  states  state[]
 }
 
 model state {
-  id        String  @id(map: "state_pk") @db.Uuid @default(uuid())
-  name      String  @db.VarChar(100)
-  country_id String @db.Uuid
-  country   country @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "state_country_fk")
-  cities    city[]
+  id         String    @id(map: "state_pk") @default(uuid()) @db.Uuid
+  name       String    @db.VarChar(100)
+  country_id String    @db.Uuid
+  address    address[]
+  cities     city[]
+  country    country   @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "state_country_fk")
 }
 
 model city {
-  id      String  @id(map: "city_pk") @db.Uuid @default(uuid())
-  name    String  @db.VarChar(100)
-  state_id String @db.Uuid
-  state   state   @relation(fields: [state_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "city_state_fk")
+  id       String    @id(map: "city_pk") @default(uuid()) @db.Uuid
+  name     String    @db.VarChar(100)
+  state_id String    @db.Uuid
+  address  address[]
+  state    state     @relation(fields: [state_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "city_state_fk")
 }

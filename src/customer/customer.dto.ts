@@ -1,5 +1,5 @@
 // customer.dto.ts
-import { IsOptional, IsString, IsEmail, IsNumberString, IsInt } from 'class-validator';
+import { IsOptional, IsString, IsEmail, IsNumberString, IsInt, IsNumber } from 'class-validator';
 
 export class CreateCustomerDto {
   @IsOptional()
@@ -28,7 +28,7 @@ export class CreateCustomerDto {
 
   @IsOptional()
   @IsInt()
-  no_of_child?: bigint;
+  no_of_child?: number;
 
   @IsOptional()
   @IsNumberString()
@@ -80,8 +80,8 @@ export class UpdateCustomerDto {
   marital_status?: string;
 
   @IsOptional()
-  @IsInt()
-  no_of_child?: bigint;
+  @IsNumber()
+  no_of_child?: number;
 
   @IsOptional()
   @IsNumberString()

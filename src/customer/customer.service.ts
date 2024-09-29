@@ -8,12 +8,31 @@ export class CustomerService {
     constructor(private prisma: PrismaService) {}
 
   async create(data: any) {
-    const { customer_relation, address, ...customerData } = data;
+    const { customer_relation, customer_address, ...customerData } = data;
+    console.log('customerData', {
+      address_lines: customer_address.address_lines,
+      country_id: customer_address.country_id,
+      state_id: customer_address.state_id,
+      city_id: customer_address.city_id,
+      postal_code: customer_address.postal_code || null,
+      remark: customer_address.remark || null,
+      staying_since: customer_address.staying_since || null,
+      is_permanent: customer_address.is_permanent || false,
+    });
     return this.prisma.customer.create({
       data: pickBy({
         ...customerData,
         customer_relation: customer_relation ? { create: customer_relation } : undefined,
-        address: address ? { create: address } : undefined,
+        customer_address: customer_address ? { create: {
+          address_lines: customer_address.address_lines,
+          country_id: customer_address.country_id,
+          state_id: customer_address.state_id,
+          city_id: customer_address.city_id,
+          postal_code: customer_address.postal_code || null,
+          remark: customer_address.remark || null,
+          staying_since: customer_address.staying_since || null,
+          is_permanent: customer_address.is_permanent || false,
+        }} : undefined,
       }),
     });
   }
@@ -42,6 +61,9 @@ export class CustomerService {
   async findOne(id: string) {
     return this.prisma.customer.findUnique({
       where: { id },
+      include: {
+        customer_address: true,
+      },
     });
   }
 
