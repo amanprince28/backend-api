@@ -1,0 +1,68 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  extensions = [pgcrypto]
+}
+
+model customer {
+  id                String              @id(map: "customer_pk") @db.Uuid @default(uuid())
+  name              String?             @db.VarChar(100)
+  ic                String?             @db.VarChar(100)
+  passport          String?             @db.VarChar(100)
+  race              String?             @db.VarChar(100)
+  gender            String?             @db.VarChar(10)
+  marital_status    String?             @map("marital-status") @db.VarChar(10)
+  no_of_child       BigInt?             @map("no-of-child")
+  mobile_no         String?             @map("mobile-no") @db.VarChar(12)
+  tel_code          String?             @map("tel-code") @db.VarChar(5)
+  tel_no            String?             @map("tel-no") @db.VarChar(10)
+  email             String?             @db.VarChar(100)
+  car_plate         String?             @map("car-plate") @db.VarChar(50)
+  address           address[]
+  customer_relation customer_relation[]
+}
+
+model address {
+  id                  String             @id(map: "address_pk") @db.Uuid @default(uuid())
+  address             String?            @db.VarChar(255)
+  city                String?            @db.VarChar(100)
+  state               String?            @db.VarChar(100)
+  postal_code         String?            @map("postal-code") @db.VarChar(100)
+  country             String?            @db.VarChar(100)
+  remark              String?            @db.VarChar(255)
+  staying_since       String?            @map("staying-since") @db.VarChar(10)
+  is_permanent        Boolean?           @default(false) @map("is-permanent")
+  customer_id         String?            @map("customer-id") @db.Uuid
+  cutomer_relation_id String?            @map("cutomer-relation-id") @db.Uuid
+  customer            customer?          @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "address_customer_fk")
+  customer_relation   customer_relation? @relation(fields: [cutomer_relation_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "address_customer_relation_fk")
+}
+
+model customer_relation {
+  id          String    @id(map: "customer_relation_pk") @db.Uuid @default(uuid())
+  customer_id String?   @map("customer-id") @db.Uuid
+  address     address[]
+  customer    customer? @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "customer_relation_customer_fk")
+}
+
+model company {
+  id                  String  @id(map: "company_pk") @db.Uuid @default(uuid())
+  name                String? @db.VarChar(100)
+  employee_type       String? @map("employee-type") @db.VarChar(100)
+  employee_no         String? @map("employee-no") @db.VarChar(100)
+  business_type       String? @map("business-type") @db.VarChar(100)
+  occupation_category String? @map("occupation-category") @db.VarChar(100)
+  department          String? @db.VarChar(100)
+  position            String? @db.VarChar(100)
+  tel_code            String? @map("tel-code") @db.VarChar(10)
+  tel_no              String? @map("tel-no") @db.VarChar(12)
+  income_type         String? @map("income-type") @db.VarChar(50)
+  income_date         String? @map("income-date") @db.VarChar(5)
+  annual_income       String? @map("annual-income") @db.VarChar(100)
+  remark              String?
+}
