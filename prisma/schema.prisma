@@ -66,3 +66,24 @@ model company {
   annual_income       String? @map("annual-income") @db.VarChar(100)
   remark              String?
 }
+
+model country {
+  id     String  @id(map: "country_pk") @db.Uuid @default(uuid())
+  name   String  @db.VarChar(100)
+  states state[]
+}
+
+model state {
+  id        String  @id(map: "state_pk") @db.Uuid @default(uuid())
+  name      String  @db.VarChar(100)
+  country_id String @db.Uuid
+  country   country @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "state_country_fk")
+  cities    city[]
+}
+
+model city {
+  id      String  @id(map: "city_pk") @db.Uuid @default(uuid())
+  name    String  @db.VarChar(100)
+  state_id String @db.Uuid
+  state   state   @relation(fields: [state_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "city_state_fk")
+}

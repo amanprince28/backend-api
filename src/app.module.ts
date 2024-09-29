@@ -6,6 +6,7 @@ import { PrismaModule } from 'nestjs-prisma';
 import { CustomerService } from './customer/customer.service';
 import { CustomerController } from './customer/customer.controller';
 import { CustomerModule } from './customer/customer.module';
+import { CountryModule } from './country/country.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { CustomerModule } from './customer/customer.module';
       }
     }),
     CustomerModule,
+    CountryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
