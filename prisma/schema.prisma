@@ -24,6 +24,7 @@ model customer {
   tel_code          String?             @map("tel-code") @db.VarChar(5)
   tel_no            String?             @map("tel-no") @db.VarChar(10)
   customer_address  address[]
+  company           company[]
   customer_relation customer_relation[]
 }
 
@@ -34,7 +35,7 @@ model address {
   is_permanent        Boolean?           @default(false) @map("is-permanent")
   postal_code         String?            @map("postal-code") @db.VarChar(100)
   remark              String?            @db.VarChar(255)
-  staying_since       String?            @map("staying-since") @db.VarChar(10)
+  staying_since       String?            @map("staying-since") @db.VarChar(50)
   address_lines       String?            @map("address-lines")
   city_id             String?            @map("city-id") @db.Uuid
   country_id          String?            @map("country-id") @db.Uuid
@@ -60,20 +61,22 @@ model customer_relation {
 }
 
 model company {
-  id                  String  @id(map: "company_pk") @default(uuid()) @db.Uuid
-  annual_income       String? @map("annual-income") @db.VarChar(100)
-  business_type       String? @map("business-type") @db.VarChar(100)
-  department          String? @db.VarChar(100)
-  employee_no         String? @map("employee-no") @db.VarChar(100)
-  employee_type       String? @map("employee-type") @db.VarChar(100)
-  income_date         String? @map("income-date") @db.VarChar(5)
-  income_type         String? @map("income-type") @db.VarChar(50)
-  name                String? @db.VarChar(100)
-  occupation_category String? @map("occupation-category") @db.VarChar(100)
-  position            String? @db.VarChar(100)
+  id                  String    @id(map: "company_pk") @default(uuid()) @db.Uuid
+  annual_income       String?   @map("annual-income") @db.VarChar(100)
+  business_type       String?   @map("business-type") @db.VarChar(100)
+  department          String?   @db.VarChar(100)
+  employee_no         String?   @map("employee-no") @db.VarChar(100)
+  employee_type       String?   @map("employee-type") @db.VarChar(100)
+  income_date         String?   @map("income-date") @db.VarChar(5)
+  income_type         String?   @map("income-type") @db.VarChar(50)
+  name                String?   @db.VarChar(100)
+  occupation_category String?   @map("occupation-category") @db.VarChar(100)
+  position            String?   @db.VarChar(100)
   remark              String?
-  tel_code            String? @map("tel-code") @db.VarChar(10)
-  tel_no              String? @map("tel-no") @db.VarChar(12)
+  tel_code            String?   @map("tel-code") @db.VarChar(10)
+  tel_no              String?   @map("tel-no") @db.VarChar(12)
+  customer_id         String?   @map("customer-id") @db.Uuid
+  customer            customer? @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "company_customer_fk")
 }
 
 model country {

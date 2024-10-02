@@ -8,22 +8,17 @@ export class CustomerService {
     constructor(private prisma: PrismaService) {}
 
   async create(data: any) {
-    const { customer_relation, customer_address, ...customerData } = data;
+    const { customer_relation, customer_address, company, ...customerData } = data;
     return this.prisma.customer.create({
       data: pickBy({
         ...customerData,
-        customer_relation: customer_relation ? { create: customer_relation } : undefined,
-        customer_address: customer_address ? { create: {
-          address_lines: customer_address.address_lines,
-          country_id: customer_address.country_id,
-          state_id: customer_address.state_id,
-          city_id: customer_address.city_id,
-          postal_code: customer_address.postal_code || null,
-          remark: customer_address.remark || null,
-          staying_since: customer_address.staying_since || null,
-          is_permanent: customer_address.is_permanent || false,
-        }} : undefined,
-      }),
+        customer_relation: customer_relation ? { create: customer_relation.map(relation => ({
+          ...relation,
+          address: relation.address ? { create: relation.address } : undefined
+        })) } : undefined,
+        customer_address: customer_address ? { create: customer_address } : undefined,
+        company: company ? { create: company } : undefined,
+      })
     });
   }
 
@@ -31,6 +26,11 @@ export class CustomerService {
     const where = pickBy(filter);
     const [customers, total] = await Promise.all([
       this.prisma.customer.findMany({
+        include: {
+          customer_relation: true,
+          customer_address: true,
+          company: true,
+        },
         skip,
         take,
         where,
