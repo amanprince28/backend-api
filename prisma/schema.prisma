@@ -47,10 +47,16 @@ model address {
 }
 
 model customer_relation {
-  id          String    @id(map: "customer_relation_pk") @default(uuid()) @db.Uuid
-  customer_id String?   @map("customer-id") @db.Uuid
-  address     address[]
-  customer    customer? @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "customer_relation_customer_fk")
+  id           String    @id(map: "customer_relation_pk") @default(uuid()) @db.Uuid
+  customer_id  String?   @map("customer-id") @db.Uuid
+  gender       String?   @db.VarChar(10)
+  ic           String?   @db.VarChar(100)
+  mobile_no    String?   @map("mobile-no") @db.VarChar(12)
+  name         String?   @db.VarChar(100)
+  passport     String?   @db.VarChar(100)
+  relationship String?   @db.VarChar(100)
+  address      address[]
+  customer     customer? @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "customer_relation_customer_fk")
 }
 
 model company {
