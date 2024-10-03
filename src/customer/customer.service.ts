@@ -52,7 +52,9 @@ export class CustomerService {
     return this.prisma.customer.findUnique({
       where: { id },
       include: {
+        customer_relation: true,
         customer_address: true,
+        company: true,
       },
     });
   }
