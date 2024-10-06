@@ -34,4 +34,9 @@ export class CustomerController {
   async delete(@Param('id') id: string) {
     return this.customerService.delete(id);
   }
+
+  @Get(':id/customer-relation')
+  getCustomerRelation(@Param('id') id: string) {
+    return this.customerService.getCustomerRelation(id);
+  }
 }

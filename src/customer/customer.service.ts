@@ -27,7 +27,11 @@ export class CustomerService {
     const [customers, total] = await Promise.all([
       this.prisma.customer.findMany({
         include: {
-          customer_relation: true,
+          customer_relation: {
+            include: {
+              address: true,
+            }
+          },
           customer_address: true,
           company: true,
         },
@@ -52,7 +56,11 @@ export class CustomerService {
     return this.prisma.customer.findUnique({
       where: { id },
       include: {
-        customer_relation: true,
+        customer_relation: {
+          include: {
+            address: true,
+          }
+        },
         customer_address: true,
         company: true,
       },
@@ -78,6 +86,16 @@ export class CustomerService {
   async delete(id: string) {
     return this.prisma.customer.delete({
       where: { id },
+    });
+  }
+
+  async getCustomerRelation(customerId: string) {
+    return this.prisma.customer_relation.findMany({
+      where: { 
+        customer: {
+          id: customerId,
+        },
+      }
     });
   }
 }
