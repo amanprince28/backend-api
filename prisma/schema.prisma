@@ -23,6 +23,7 @@ model customer {
   race              String?             @db.VarChar(100)
   tel_code          String?             @map("tel-code") @db.VarChar(5)
   tel_no            String?             @map("tel-no") @db.VarChar(10)
+  deleted_at        DateTime?
   customer_address  address[]
   company           company[]
   customer_relation customer_relation[]

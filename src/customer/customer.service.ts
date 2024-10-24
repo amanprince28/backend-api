@@ -24,6 +24,7 @@ export class CustomerService {
 
   async findAll(skip: number, take: number, filter: any) {
     const where = pickBy(filter);
+    where.deleted_at = null;
     const [customers, total] = await Promise.all([
       this.prisma.customer.findMany({
         include: {
@@ -84,7 +85,8 @@ export class CustomerService {
   }
 
   async delete(id: string) {
-    return this.prisma.customer.delete({
+    return this.prisma.customer.update({
+      data: { deleted_at: new Date() },
       where: { id },
     });
   }
