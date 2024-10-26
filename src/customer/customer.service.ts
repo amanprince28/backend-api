@@ -8,6 +8,7 @@ export class CustomerService {
     constructor(private prisma: PrismaService) {}
 
   async create(data: any) {
+    // console.log(data);
     const { customer_relation, customer_address, company, ...customerData } = data;
     return this.prisma.customer.create({
       data: pickBy({
