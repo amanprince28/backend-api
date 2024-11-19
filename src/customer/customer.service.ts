@@ -9,7 +9,7 @@ export class CustomerService {
 
   async create(data: any) {
     // console.log(data);
-    const { customer_relation, customer_address, company, bank, ...customerData } = data;
+    const { customer_relation, customer_address, company, bankDetails, ...customerData } = data;
     return this.prisma.customer.create({
       data: pickBy({
         ...customerData,
@@ -19,7 +19,7 @@ export class CustomerService {
         })) } : undefined,
         customer_address: customer_address ? { create: customer_address } : undefined,
         company: company ? { create: company } : undefined,
-        bank: bank ? { create: bank } : undefined
+        bank: bankDetails ? { create: bankDetails } : undefined
       })
     });
   }
@@ -71,7 +71,7 @@ export class CustomerService {
   }
 
   async update(id: string, data: any) {
-    const { customer_relation, customer_address, company, ...customerData } = data;
+    const { customer_relation, customer_address, company, bankDetails, ...customerData } = data;
     return this.prisma.customer.update({
       where: { id },
       data: pickBy({
@@ -82,6 +82,7 @@ export class CustomerService {
         })) } : undefined,
         customer_address: customer_address ? { create: customer_address } : undefined,
         company: company ? { create: company } : undefined,
+        bank: bankDetails ? { create: bankDetails } : undefined
       }),
     });
   }
