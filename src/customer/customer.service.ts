@@ -10,18 +10,42 @@ export class CustomerService {
   async create(data: any) {
     // console.log(data);
     const { customer_relation, customer_address, company, bankDetails, ...customerData } = data;
-    return this.prisma.customer.create({
-      data: pickBy({
-        ...customerData,
-        customer_relation: customer_relation ? { create: customer_relation.map(relation => ({
-          ...relation,
-          address: relation.address ? { create: relation.address } : undefined
-        })) } : undefined,
-        customer_address: customer_address ? { create: customer_address } : undefined,
-        company: company ? { create: company } : undefined,
-        bank: bankDetails ? { create: bankDetails } : undefined
-      })
-    });
+    const createOrUpdateRelations = (relations) => {
+      return relations.map(relation => ({
+        ...relation,
+        address: relation.address ? { create: relation.address } : undefined
+      }));
+    };
+  
+    if (customerData.id) {
+      const id = customerData.id;
+      delete customerData.id;
+      await this.prisma.customer.update({
+        where: { id },
+        data: pickBy({
+          ...customerData,
+          customer_relation: customer_relation ? { 
+            create: createOrUpdateRelations(customer_relation.filter(relation => !relation.id)) 
+          } : undefined,
+          customer_address: customer_address && !customer_address.id ? { create: customer_address } : undefined,
+          company: company && !company.id ? { create: company } : undefined,
+          bank: bankDetails && !bankDetails.id ? { create: bankDetails } : undefined
+        }),
+      });
+    } else {
+      return this.prisma.customer.create({
+        data: pickBy({
+          ...customerData,
+          customer_relation: customer_relation ? { 
+            create: createOrUpdateRelations(customer_relation.filter(relation => !relation.id)) 
+          } : undefined,
+          customer_address: customer_address && !customer_address.id ? { create: customer_address } : undefined,
+          company: company && !company.id ? { create: company } : undefined,
+          bank: bankDetails && !bankDetails.id ? { create: bankDetails } : undefined
+        })
+      });
+    }
+  
   }
 
   async findAll(skip: number, take: number, filter: any) {
