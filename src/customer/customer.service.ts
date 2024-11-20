@@ -127,4 +127,14 @@ export class CustomerService {
       }
     });
   }
+
+  async addDocument(data: any) {
+    return this.prisma.document.create({
+      data: {
+        name: data.name,
+        path: data.path,
+        customer_id: data.customer_id,
+      }
+    });
+  }
 }

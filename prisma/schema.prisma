@@ -34,6 +34,7 @@ model customer {
   company           company[]
   customer_relation customer_relation[]
   bank bank[]
+  document document[]
 }
 
 model address {
@@ -132,4 +133,13 @@ model bank {
   remark     String   @db.VarChar(255)
   customer_id  String?   @map("customer-id") @db.Uuid
   customer     customer? @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model document {
+  id         String   @id @default(uuid()) @db.Uuid
+  name String   @db.VarChar(255)
+  path String   @db.VarChar(255)
+  customer_id  String?   @map("customer-id") @db.Uuid
+  customer     customer? @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
 }
