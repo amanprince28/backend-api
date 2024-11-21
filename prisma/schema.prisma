@@ -27,7 +27,7 @@ model customer {
   customer_address Json?
   relations        Json?
   employment       Json?
-  bank             bank[]
+  bank             Json?
   document         document[]
 }
 
@@ -59,18 +59,6 @@ model user {
   password   String?  @db.VarChar(255)
   created_at DateTime @default(now()) @db.Timestamp(6)
   role       Role?    @default(Editor)
-}
-
-model bank {
-  id          String    @id @default(uuid()) @db.Uuid
-  bankName    String    @db.VarChar(255)
-  accountNo   String    @db.VarChar(255)
-  bankHolder  String    @db.VarChar(255)
-  bankCard    String    @db.VarChar(255)
-  pinNo       String    @db.VarChar(255)
-  remark      String    @db.VarChar(255)
-  customer_id String?   @map("customer-id") @db.Uuid
-  customer    customer? @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model document {

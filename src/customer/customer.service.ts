@@ -23,15 +23,6 @@ export class CustomerService {
     where.deleted_at = null;
     const [customers, total] = await Promise.all([
       this.prisma.customer.findMany({
-        // include: {
-        //   customer_relation: {
-        //     include: {
-        //       address: true,
-        //     }
-        //   },
-        //   customer_address: true,
-        //   company: true,
-        // },
         skip,
         take,
         where,
@@ -88,16 +79,6 @@ export class CustomerService {
     });
   }
 
-  async getCustomerRelation(customerId: string) {
-    // return this.prisma.customer_relation.findMany({
-    //   where: { 
-    //     customer: {
-    //       id: customerId,
-    //     },
-    //   }
-    // });
-  }
-
   async addDocument(data: any) {
     return this.prisma.document.create({
       data: {
@@ -111,6 +92,15 @@ export class CustomerService {
   async addCustomer(data) {
     if (data.customer_address) {
       data.customer_address = JSON.parse(JSON.stringify(data.customer_address));
+    }
+    if (data.relations) {
+      data.relations = JSON.parse(JSON.stringify(data.relations));
+    }
+    if (data.employment) {
+      data.employment = JSON.parse(JSON.stringify(data.employment));
+    }
+    if (data.bank) {
+      data.bank = JSON.parse(JSON.stringify(data.bank));
     }
     return this.prisma.customer.create({
       data: data,

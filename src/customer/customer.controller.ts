@@ -35,11 +35,6 @@ export class CustomerController {
     return this.customerService.delete(id);
   }
 
-  @Get(':id/customer-relation')
-  getCustomerRelation(@Param('id') id: string) {
-    return this.customerService.getCustomerRelation(id);
-  }
-
   @Post('add-document')
   addDocument(@Body() data: any) {
     return this.customerService.addDocument(data);
