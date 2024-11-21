@@ -99,8 +99,8 @@ export class CustomerService {
     if (data.employment) {
       data.employment = JSON.parse(JSON.stringify(data.employment));
     }
-    if (data.bank) {
-      data.bank = JSON.parse(JSON.stringify(data.bank));
+    if (data.bank_details) {
+      data.bank_details = JSON.parse(JSON.stringify(data.bank_details));
     }
     return this.prisma.customer.create({
       data: data,
@@ -108,6 +108,18 @@ export class CustomerService {
   }
 
   async updateCustomer(data, id) {
+    if (data.customer_address) {
+      data.customer_address = JSON.parse(JSON.stringify(data.customer_address));
+    }
+    if (data.relations) {
+      data.relations = JSON.parse(JSON.stringify(data.relations));
+    }
+    if (data.employment) {
+      data.employment = JSON.parse(JSON.stringify(data.employment));
+    }
+    if (data.bank_details) {
+      data.bank_details = JSON.parse(JSON.stringify(data.bank_details));
+    }
     return this.prisma.customer.update({
       where: { id },
       data: data,

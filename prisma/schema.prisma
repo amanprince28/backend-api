@@ -27,7 +27,7 @@ model customer {
   customer_address Json?
   relations        Json?
   employment       Json?
-  bank             Json?
+  bank_details     Json?
   document         document[]
 }
 
