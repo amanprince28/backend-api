@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateCustomerDto, UpdateCustomerDto } from './customer.dto';
 import { pickBy } from 'lodash';
+import { count } from 'console';
 
 @Injectable()
 export class CustomerService {
@@ -9,43 +10,12 @@ export class CustomerService {
 
   async create(data: any) {
     // console.log(data);
-    const { customer_relation, customer_address, company, bankDetails, ...customerData } = data;
-    const createOrUpdateRelations = (relations) => {
-      return relations.map(relation => ({
-        ...relation,
-        address: relation.address ? { create: relation.address } : undefined
-      }));
-    };
-  
-    if (customerData.id) {
-      const id = customerData.id;
-      delete customerData.id;
-      await this.prisma.customer.update({
-        where: { id },
-        data: pickBy({
-          ...customerData,
-          customer_relation: customer_relation ? { 
-            create: createOrUpdateRelations(customer_relation.filter(relation => !relation.id)) 
-          } : undefined,
-          customer_address: customer_address && !customer_address.id ? { create: customer_address } : undefined,
-          company: company && !company.id ? { create: company } : undefined,
-          bank: bankDetails && !bankDetails.id ? { create: bankDetails } : undefined
-        }),
-      });
+    const { bankDetails, ...customerData } = data;
+    if(customerData.id) {
+      return this.updateCustomer(customerData, customerData.id);
     } else {
-      return this.prisma.customer.create({
-        data: pickBy({
-          ...customerData,
-          customer_relation: customer_relation ? { 
-            create: createOrUpdateRelations(customer_relation.filter(relation => !relation.id)) 
-          } : undefined,
-          customer_address: customer_address && !customer_address.id ? { create: customer_address } : undefined,
-          company: company && !company.id ? { create: company } : undefined,
-          bank: bankDetails && !bankDetails.id ? { create: bankDetails } : undefined
-        })
-      });
+      return this.addCustomer(customerData);
     }
-  
   }
 
   async findAll(skip: number, take: number, filter: any) {
@@ -53,15 +23,15 @@ export class CustomerService {
     where.deleted_at = null;
     const [customers, total] = await Promise.all([
       this.prisma.customer.findMany({
-        include: {
-          customer_relation: {
-            include: {
-              address: true,
-            }
-          },
-          customer_address: true,
-          company: true,
-        },
+        // include: {
+        //   customer_relation: {
+        //     include: {
+        //       address: true,
+        //     }
+        //   },
+        //   customer_address: true,
+        //   company: true,
+        // },
         skip,
         take,
         where,
@@ -82,15 +52,15 @@ export class CustomerService {
   async findOne(id: string) {
     return this.prisma.customer.findUnique({
       where: { id },
-      include: {
-        customer_relation: {
-          include: {
-            address: true,
-          }
-        },
-        customer_address: true,
-        company: true,
-      },
+      // include: {
+      //   customer_relation: {
+      //     include: {
+      //       address: true,
+      //     }
+      //   },
+      //   customer_address: true,
+      //   company: true,
+      // },
     });
   }
 
@@ -119,13 +89,13 @@ export class CustomerService {
   }
 
   async getCustomerRelation(customerId: string) {
-    return this.prisma.customer_relation.findMany({
-      where: { 
-        customer: {
-          id: customerId,
-        },
-      }
-    });
+    // return this.prisma.customer_relation.findMany({
+    //   where: { 
+    //     customer: {
+    //       id: customerId,
+    //     },
+    //   }
+    // });
   }
 
   async addDocument(data: any) {
@@ -137,4 +107,21 @@ export class CustomerService {
       }
     });
   }
+
+  async addCustomer(data) {
+    if (data.customer_address) {
+      data.customer_address = JSON.parse(JSON.stringify(data.customer_address));
+    }
+    return this.prisma.customer.create({
+      data: data,
+    });
+  }
+
+  async updateCustomer(data, id) {
+    return this.prisma.customer.update({
+      where: { id },
+      data: data,
+    });
+  }
+  
 }

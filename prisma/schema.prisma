@@ -9,137 +9,80 @@ datasource db {
   extensions = [pgcrypto, uuid_ossp(map: "uuid-ossp", schema: "public")]
 }
 
-enum Role {
-  SuperAdmin
-  Admin
-  Editor
-}
-
 model customer {
-  id                String              @id(map: "customer_pk") @default(uuid()) @db.Uuid
-  car_plate         String?             @map("car-plate") @db.VarChar(255)
-  email             String?             @db.VarChar(255)
-  gender            String?             @db.VarChar(255)
-  ic                String?             @db.VarChar(255)
-  marital_status    String?             @map("marital-status") @db.VarChar(255)
-  mobile_no         String?             @map("mobile-no") @db.VarChar(255)
-  name              String?             @db.VarChar(255)
-  no_of_child       Int?                @map("no-of-child")
-  passport          String?             @db.VarChar(255)
-  race              String?             @db.VarChar(255)
-  tel_code          String?             @map("tel-code") @db.VarChar(255)
-  tel_no            String?             @map("tel-no") @db.VarChar(255)
-  deleted_at        DateTime?
-  customer_address  address[]
-  company           company[]
-  customer_relation customer_relation[]
-  bank bank[]
-  document document[]
-}
-
-model address {
-  id                  String             @id(map: "address_pk") @default(uuid()) @db.Uuid
-  customer_id         String?            @map("customer-id") @db.Uuid
-  cutomer_relation_id String?            @map("cutomer-relation-id") @db.Uuid
-  is_permanent        Boolean?           @default(false) @map("is-permanent")
-  postal_code         String?            @map("postal-code") @db.VarChar(255)
-  remark              String?            @db.VarChar(255)
-  staying_since       String?            @map("staying-since") @db.VarChar(255)
-  address_lines       String?            @map("address-lines")
-  city_id             String?            @map("city-id") @db.Uuid
-  country_id          String?            @map("country-id") @db.Uuid
-  state_id            String?            @map("state-id") @db.Uuid
-  city                city?              @relation(fields: [city_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "address_city_fk")
-  country             country?           @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "address_country_fk")
-  customer            customer?          @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "address_customer_fk")
-  customer_relation   customer_relation? @relation(fields: [cutomer_relation_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "address_customer_relation_fk")
-  state               state?             @relation(fields: [state_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "address_state_fk")
-}
-
-model customer_relation {
-  id           String    @id(map: "customer_relation_pk") @default(uuid()) @db.Uuid
-  customer_id  String?   @map("customer-id") @db.Uuid
-  gender       String?   @db.VarChar(255)
-  ic           String?   @db.VarChar(255)
-  mobile_no    String?   @map("mobile-no") @db.VarChar(255)
-  name         String?   @db.VarChar(255)
-  passport     String?   @db.VarChar(255)
-  relationship String?   @db.VarChar(255)
-  address      address[]
-  customer     customer? @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "customer_relation_customer_fk")
-}
-
-model company {
-  id                  String    @id(map: "company_pk") @default(uuid()) @db.Uuid
-  annual_income       String?   @map("annual-income") @db.VarChar(255)
-  business_type       String?   @map("business-type") @db.VarChar(255)
-  department          String?   @db.VarChar(255)
-  employee_no         String?   @map("employee-no") @db.VarChar(255)
-  employee_type       String?   @map("employee-type") @db.VarChar(255)
-  income_date         String?   @map("income-date") @db.VarChar(255)
-  income_type         String?   @map("income-type") @db.VarChar(255)
-  name                String?   @db.VarChar(255)
-  occupation_category String?   @map("occupation-category") @db.VarChar(255)
-  position            String?   @db.VarChar(255)
-  remark              String?
-  tel_code            String?   @map("tel-code") @db.VarChar(255)
-  tel_no              String?   @map("tel-no") @db.VarChar(255)
-  customer_id         String?   @map("customer-id") @db.Uuid
-  customer            customer? @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "company_customer_fk")
+  id               String     @id(map: "customer_pk") @default(uuid()) @db.Uuid
+  car_plate        String?    @map("car-plate") @db.VarChar(255)
+  email            String?    @db.VarChar(255)
+  gender           String?    @db.VarChar(255)
+  ic               String?    @db.VarChar(255)
+  marital_status   String?    @map("marital-status") @db.VarChar(255)
+  mobile_no        String?    @map("mobile-no") @db.VarChar(255)
+  name             String?    @db.VarChar(255)
+  no_of_child      Int?       @map("no-of-child")
+  passport         String?    @db.VarChar(255)
+  race             String?    @db.VarChar(255)
+  tel_code         String?    @map("tel-code") @db.VarChar(255)
+  tel_no           String?    @map("tel-no") @db.VarChar(255)
+  deleted_at       DateTime?
+  customer_address Json?
+  relations        Json?
+  employment       Json?
+  bank             bank[]
+  document         document[]
 }
 
 model country {
-  id      String    @id(map: "country_pk") @default(uuid()) @db.Uuid
-  name    String    @db.VarChar(255)
-  address address[]
-  states  state[]
+  id     String  @id(map: "country_pk") @default(uuid()) @db.Uuid
+  name   String  @db.VarChar(255)
+  states state[]
 }
 
 model state {
-  id         String    @id(map: "state_pk") @default(uuid()) @db.Uuid
-  name       String    @db.VarChar(255)
-  country_id String    @db.Uuid
-  address    address[]
+  id         String  @id(map: "state_pk") @default(uuid()) @db.Uuid
+  name       String  @db.VarChar(255)
+  country_id String  @db.Uuid
   cities     city[]
-  country    country   @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "state_country_fk")
+  country    country @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "state_country_fk")
 }
 
 model city {
-  id       String    @id(map: "city_pk") @default(uuid()) @db.Uuid
-  name     String    @db.VarChar(255)
-  state_id String    @db.Uuid
-  address  address[]
-  state    state     @relation(fields: [state_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "city_state_fk")
+  id       String @id(map: "city_pk") @default(uuid()) @db.Uuid
+  name     String @db.VarChar(255)
+  state_id String @db.Uuid
+  state    state  @relation(fields: [state_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "city_state_fk")
 }
-
 
 model user {
   id         String   @id @default(uuid()) @db.Uuid
   username   String   @unique @db.VarChar(255)
   email      String   @unique @db.VarChar(255)
-  password   String?   @db.VarChar(255)
-  role       Role?     @default(Editor)
+  password   String?  @db.VarChar(255)
   created_at DateTime @default(now()) @db.Timestamp(6)
+  role       Role?    @default(Editor)
 }
 
-
 model bank {
-  id         String   @id @default(uuid()) @db.Uuid
-  bankName   String   @db.VarChar(255)
-  accountNo  String   @db.VarChar(255)
-  bankHolder String   @db.VarChar(255)
-  bankCard   String   @db.VarChar(255)
-  pinNo      String   @db.VarChar(255)
-  remark     String   @db.VarChar(255)
-  customer_id  String?   @map("customer-id") @db.Uuid
-  customer     customer? @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id          String    @id @default(uuid()) @db.Uuid
+  bankName    String    @db.VarChar(255)
+  accountNo   String    @db.VarChar(255)
+  bankHolder  String    @db.VarChar(255)
+  bankCard    String    @db.VarChar(255)
+  pinNo       String    @db.VarChar(255)
+  remark      String    @db.VarChar(255)
+  customer_id String?   @map("customer-id") @db.Uuid
+  customer    customer? @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model document {
-  id         String   @id @default(uuid()) @db.Uuid
-  name String   @db.VarChar(255)
-  path String   @db.VarChar(255)
-  customer_id  String?   @map("customer-id") @db.Uuid
-  customer     customer? @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String    @db.VarChar(255)
+  customer_id String?   @map("customer-id") @db.Uuid
+  path        String    @db.VarChar(255)
+  customer    customer? @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
 
+enum Role {
+  SuperAdmin
+  Admin
+  Editor
 }

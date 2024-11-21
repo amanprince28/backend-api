@@ -8,25 +8,25 @@ export class CompanyService {
   constructor(private prisma: PrismaService) {}
 
   create(createCompanyDto: CreateCompanyDto) {
-    return this.prisma.company.create({ data: createCompanyDto });
+    // return this.prisma.company.create({ data: createCompanyDto });
   }
 
   findAll() {
-    return this.prisma.company.findMany();
+    // return this.prisma.company.findMany();
   }
 
   findOne(id: string) {
-    return this.prisma.company.findUnique({ where: { id } });
+    // return this.prisma.company.findUnique({ where: { id } });
   }
 
   update(id: string, updateCompanyDto: UpdateCompanyDto) {
-    return this.prisma.company.update({
-      where: { id },
-      data: updateCompanyDto,
-    });
+    // return this.prisma.company.update({
+    //   where: { id },
+    //   data: updateCompanyDto,
+    // });
   }
 
   remove(id: string) {
-    return this.prisma.company.delete({ where: { id } });
+    // return this.prisma.company.delete({ where: { id } });
   }
 }
