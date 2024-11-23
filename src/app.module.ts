@@ -9,6 +9,7 @@ import { CustomerModule } from './customer/customer.module';
 import { CountryModule } from './country/country.module';
 import { UserModule } from './user/user.module';
 import { CompanyModule } from './company/company.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { CompanyModule } from './company/company.module';
     CountryModule,
     UserModule,
     CompanyModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

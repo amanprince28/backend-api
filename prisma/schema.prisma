@@ -29,6 +29,8 @@ model customer {
   employment       Json?
   bank_details     Json?
   document         document[]
+  created_by       String?    @db.Uuid
+  supervisor       String?    @db.Uuid
 }
 
 model country {
@@ -54,11 +56,11 @@ model city {
 
 model user {
   id         String   @id @default(uuid()) @db.Uuid
-  username   String   @unique @db.VarChar(255)
   email      String   @unique @db.VarChar(255)
   password   String?  @db.VarChar(255)
   created_at DateTime @default(now()) @db.Timestamp(6)
   role       Role?    @default(Editor)
+  supervisor String?   @db.Uuid
 }
 
 model document {
