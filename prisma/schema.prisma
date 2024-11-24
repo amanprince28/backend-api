@@ -11,26 +11,27 @@ datasource db {
 
 model customer {
   id               String     @id(map: "customer_pk") @default(uuid()) @db.Uuid
-  car_plate        String?    @map("car-plate") @db.VarChar(255)
+  car_plate        String?    @db.VarChar(255)
   email            String?    @db.VarChar(255)
   gender           String?    @db.VarChar(255)
   ic               String?    @db.VarChar(255)
-  marital_status   String?    @map("marital-status") @db.VarChar(255)
-  mobile_no        String?    @map("mobile-no") @db.VarChar(255)
+  marital_status   String?    @db.VarChar(255)
+  mobile_no        String?    @db.VarChar(255)
   name             String?    @db.VarChar(255)
-  no_of_child      Int?       @map("no-of-child")
+  no_of_child      Int?
   passport         String?    @db.VarChar(255)
   race             String?    @db.VarChar(255)
-  tel_code         String?    @map("tel-code") @db.VarChar(255)
-  tel_no           String?    @map("tel-no") @db.VarChar(255)
+  tel_code         String?    @db.VarChar(255)
+  tel_no           String?    @db.VarChar(255)
   deleted_at       DateTime?
-  customer_address Json?
-  relations        Json?
-  employment       Json?
   bank_details     Json?
-  document         document[]
   created_by       String?    @db.Uuid
+  customer_address Json?
+  employment       Json?
+  relations        Json?
   supervisor       String?    @db.Uuid
+  document         document[]
+  loan             loan[]
 }
 
 model country {
@@ -56,20 +57,36 @@ model city {
 
 model user {
   id         String   @id @default(uuid()) @db.Uuid
-  name       String?  @db.VarChar(255)
   email      String   @unique @db.VarChar(255)
   password   String?  @db.VarChar(255)
   created_at DateTime @default(now()) @db.Timestamp(6)
   role       Role?    @default(AGENT)
   supervisor String?  @db.Uuid
+  name       String?  @db.VarChar(255)
 }
 
 model document {
   id          String    @id @default(uuid()) @db.Uuid
   name        String    @db.VarChar(255)
-  customer_id String?   @map("customer-id") @db.Uuid
+  customer_id String?   @db.Uuid
   path        String    @db.VarChar(255)
-  customer    customer? @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  customer    customer? @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "document_customer-id_fkey")
+}
+
+model loan {
+  id               String    @id(map: "loan_pk") @db.Uuid
+  customer_id      String?   @db.Uuid
+  loan_package     String?   @db.VarChar(255)
+  repayment_date   String?   @db.VarChar(255)
+  principal_amount String?   @db.VarChar(255)
+  deposit_amount   String?   @db.VarChar(255)
+  application_fee  String?   @db.VarChar(255)
+  payment_upfront  String?   @db.VarChar(255)
+  interest         String?   @db.VarChar(255)
+  remark           String?   @db.VarChar
+  created_by       String?   @db.Uuid
+  supervisor       String?   @db.Uuid
+  customer         customer? @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "loan_customer_fk")
 }
 
 enum Role {
