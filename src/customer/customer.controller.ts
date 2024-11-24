@@ -39,4 +39,9 @@ export class CustomerController {
   addDocument(@Body() data: any) {
     return this.customerService.addDocument(data);
   }
+
+  @Get('getCustomer/:key')
+  async getCustomer(@Param('key') key: string) {
+    return this.customerService.getCustomer(key);
+  }
 }

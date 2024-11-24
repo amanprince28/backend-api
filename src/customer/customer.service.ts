@@ -125,5 +125,38 @@ export class CustomerService {
       data: data,
     });
   }
+
+  getCustomer(key: string) {
+    return this.prisma.customer.findMany({
+      where: pickBy({
+        OR: [
+          {
+            name: {
+              contains: key,
+              mode: "insensitive"
+            }
+          },
+          {
+            email: {
+              contains: key,
+              mode: "insensitive"
+            }
+          },
+          {
+            passport: {
+              contains: key,
+              mode: "insensitive"
+            }
+          },
+          {
+            ic: {
+              contains: key,
+              mode: "insensitive"
+            }
+          }
+        ]
+      }),
+    });
+  }
   
 }

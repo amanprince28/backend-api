@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { pickBy } from 'lodash';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'nestjs-prisma';
 import * as bcrypt from 'bcrypt';
@@ -8,18 +8,14 @@ import * as bcrypt from 'bcrypt';
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createUserDto: CreateUserDto) {
-    return this.prisma.user.create({ data: createUserDto });
-  }
-
   async findAll() {
     return this.prisma.user.findMany();
   }
 
-  async findOne(email: string): Promise<any> {
+  async findOne(id: string): Promise<any> {
     return this.prisma.user.findUnique({
       where: {
-        email,
+        id,
       },
     });
   }
@@ -59,5 +55,29 @@ export class UserService {
       }
     }
     return null;
+  }
+
+  findAgentAndLeads(key: string) {
+    return this.prisma.user.findMany({
+      where: pickBy({
+        OR: [
+          {
+            name: {
+              contains: key,
+              mode: "insensitive"
+            }
+          },
+          {
+            email: {
+              contains: key,
+              mode: "insensitive"
+            }
+          }
+        ],
+        role: {
+          in: ['AGENT', 'LEAD'],
+        },
+      }),
+    });
   }
 }

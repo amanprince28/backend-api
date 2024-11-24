@@ -22,6 +22,11 @@ export class UserController {
     return this.userService.findOne(id);
   }
 
+  @Get('getAgentAndLeads/:key')
+  async findAgentAndLeads(@Param('key') key: string) {
+    return this.userService.findAgentAndLeads(key);
+  }
+
   @Put(':id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(id, updateUserDto);
