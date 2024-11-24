@@ -8,7 +8,7 @@ constructor(private authService: AuthService) {}
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Body() req) {
-    return this.authService.login(req.user);
+  async login(@Body() body) {
+    return this.authService.login(body);
   }
 }

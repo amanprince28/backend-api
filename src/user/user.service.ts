@@ -32,12 +32,15 @@ export class UserService {
     return this.prisma.user.delete({ where: { id } });
   }
 
-  async createUser(email: string, password: string): Promise<any> {
-    const hashedPassword = await bcrypt.hash(password, 10);
+  async createUser(payload): Promise<any> {
+    const hashedPassword = await bcrypt.hash(payload.password, 10);
     return this.prisma.user.create({
       data: {
-        email,
+        name: payload.name,
+        email: payload.email,
         password: hashedPassword,
+        role: payload.role ? payload.role : 'AGENT',
+        supervisor: payload.supervisor
       },
     });
   }
