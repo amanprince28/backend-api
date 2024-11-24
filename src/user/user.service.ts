@@ -32,6 +32,10 @@ export class UserService {
     return this.prisma.user.delete({ where: { id } });
   }
 
+  async findByEmail(email: string) {
+    return this.prisma.user.findUnique({ where: { email } });
+  }
+
   async createUser(payload): Promise<any> {
     const hashedPassword = await bcrypt.hash(payload.password, 10);
     return this.prisma.user.create({
@@ -46,10 +50,13 @@ export class UserService {
   }
 
   async validateUser(email: string, password: string): Promise<any> {
-    const user = await this.findOne(email);
-    if (user && await bcrypt.compare(password, user.password)) {
-      const { password, ...result } = user;
-      return result;
+    const user = await this.findByEmail(email);
+    if (user && user.password) {
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (isPasswordValid) {
+        const { password, ...result } = user;
+        return result; // Exclude password before returning
+      }
     }
     return null;
   }
