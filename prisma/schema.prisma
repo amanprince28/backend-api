@@ -65,6 +65,7 @@ model user {
   role       Role?    @default(AGENT)
   supervisor String?  @db.Uuid
   name       String?  @db.VarChar(255)
+   status    Boolean? @default(true)
 }
 
 model document {

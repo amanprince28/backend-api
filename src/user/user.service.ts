@@ -40,7 +40,8 @@ export class UserService {
         email: payload.email,
         password: hashedPassword,
         role: payload.role ? payload.role : 'AGENT',
-        supervisor: payload.supervisor
+        supervisor: payload.supervisor,
+        status:payload.status
       },
     });
   }
