@@ -11,18 +11,12 @@ datasource db {
 
 model customer {
   id               String     @id(map: "customer_pk") @default(uuid()) @db.Uuid
-  car_plate        String?    @db.VarChar(255)
   email            String?    @db.VarChar(255)
   gender           String?    @db.VarChar(255)
   ic               String?    @db.VarChar(255)
-  marital_status   String?    @db.VarChar(255)
-  mobile_no        String?    @db.VarChar(255)
   name             String?    @db.VarChar(255)
-  no_of_child      Int?
   passport         String?    @db.VarChar(255)
   race             String?    @db.VarChar(255)
-  tel_code         String?    @db.VarChar(255)
-  tel_no           String?    @db.VarChar(255)
   deleted_at       DateTime?
   bank_details     Json?
   created_by       String?    @db.Uuid
@@ -30,6 +24,14 @@ model customer {
   employment       Json?
   relations        Json?
   supervisor       String?    @db.Uuid
+  car_plate        String?    @db.VarChar(255)
+  marital_status   String?    @db.VarChar(255)
+  mobile_no        String?    @db.VarChar(255)
+  no_of_child      Int?
+  tel_code         String?    @db.VarChar(255)
+  tel_no           String?    @db.VarChar(255)
+  status           String?    @db.VarChar(255)
+  remarks          Json?
   document         document[]
   loan             loan[]
 }
@@ -68,8 +70,8 @@ model user {
 model document {
   id          String    @id @default(uuid()) @db.Uuid
   name        String    @db.VarChar(255)
-  customer_id String?   @db.Uuid
   path        String    @db.VarChar(255)
+  customer_id String?   @db.Uuid
   customer    customer? @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "document_customer-id_fkey")
 }
 
