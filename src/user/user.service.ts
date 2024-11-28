@@ -74,9 +74,6 @@ export class UserService {
             }
           }
         ],
-        role: {
-          in: ['AGENT', 'LEAD'],
-        },
       }),
     });
   }
