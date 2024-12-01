@@ -10,6 +10,7 @@ import { CountryModule } from './country/country.module';
 import { UserModule } from './user/user.module';
 import { CompanyModule } from './company/company.module';
 import { AuthModule } from './auth/auth.module';
+import { LoanModule } from './loan/loan.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { AuthModule } from './auth/auth.module';
     UserModule,
     CompanyModule,
     AuthModule,
+    LoanModule,
   ],
   controllers: [AppController],
   providers: [AppService],
