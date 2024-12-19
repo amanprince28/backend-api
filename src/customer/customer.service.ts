@@ -19,8 +19,39 @@ export class CustomerService {
   }
 
   async findAll(skip: number, take: number, filter: any) {
-    const where = pickBy(filter);
-    where.deleted_at = null;
+    let where = {
+      deleted_at: null
+    }
+    if (filter) {
+      where = pickBy({
+        OR: [
+          {
+            name: {
+              contains: filter,
+              mode: "insensitive"
+            }
+          },
+          {
+            email: {
+              contains: filter,
+              mode: "insensitive"
+            }
+          },
+          {
+            passport: {
+              contains: filter,
+              mode: "insensitive"
+            }
+          },
+          {
+            ic: {
+              contains: filter,
+              mode: "insensitive"
+            }
+          }
+        ]
+      });
+    }
     const [customers, total] = await Promise.all([
       this.prisma.customer.findMany({
         skip,

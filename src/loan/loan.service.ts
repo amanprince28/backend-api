@@ -9,7 +9,20 @@ export class LoanService {
 
   async create(createLoanDto) {
     return this.prisma.loan.create({
-      data: createLoanDto,
+      data: {
+        customer: { connect: { id: createLoanDto.customerId } },
+        supervisor: createLoanDto.supervisor,
+        
+        application_fee: createLoanDto.applicationFee.toString(),
+        date_period: createLoanDto.datePeriod.toString(),
+        deposit_amount: createLoanDto.depositAmount.toString(),
+        interest: createLoanDto.interest.toString(),
+        loan_remark: createLoanDto.loanRemark.toString(),
+        payment_up_front: createLoanDto.paymentUpfront.toString(),
+        principal_amount: createLoanDto.principalAmount.toString(),
+        repayment_date: createLoanDto.repaymentDate.toString(),
+        unit_of_date: createLoanDto.unitofDate.toString(),
+      },
     });
   }
 

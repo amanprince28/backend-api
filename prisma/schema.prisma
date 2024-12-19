@@ -65,7 +65,7 @@ model user {
   role       Role?    @default(AGENT)
   supervisor String?  @db.Uuid
   name       String?  @db.VarChar(255)
-   status    Boolean? @default(true)
+  status    Boolean? @default(true)
 }
 
 model document {
@@ -77,15 +77,19 @@ model document {
 }
 
 model loan {
-  id               String    @id(map: "loan_pk") @db.Uuid
+  id               String    @id(map: "loan_pk") @default(uuid()) @db.Uuid
   customer_id      String?   @db.Uuid
-  loan_package     String?   @db.VarChar(255)
-  repayment_date   String?   @db.VarChar(255)
-  principal_amount String?   @db.VarChar(255)
-  deposit_amount   String?   @db.VarChar(255)
-  application_fee  String?   @db.VarChar(255)
-  payment_upfront  String?   @db.VarChar(255)
-  interest         String?   @db.VarChar(255)
+  
+  application_fee  String?   @db.VarChar
+  date_period      String?   @db.VarChar
+  deposit_amount   String?   @db.VarChar
+  interest         String?   @db.VarChar
+  loan_remark      String?   @db.VarChar
+  payment_up_front String?   @db.VarChar
+  principal_amount String?   @db.VarChar
+  repayment_date   String?   @db.VarChar
+  unit_of_date     String?   @db.VarChar
+
   remark           String?   @db.VarChar
   created_by       String?   @db.Uuid
   supervisor       String?   @db.Uuid
