@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Param, Post, Put, UseGuards ,Get} from '@nestjs/common';
 import { LoanService } from './loan.service';
 import { CreateLoanDto } from './dto/create-loan.dto';
 import { UpdateLoanDto } from './dto/update-loan.dto';
@@ -7,6 +7,11 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 @Controller('loan')
 export class LoanController {
   constructor(private readonly loanService: LoanService) {}
+
+  @Get()
+  async findAll() {
+    return this.loanService.findAll();
+  }
 
   // @UseGuards(JwtAuthGuard)
   @Post()

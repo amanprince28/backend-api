@@ -7,6 +7,10 @@ import { UpdateLoanDto } from './dto/update-loan.dto';
 export class LoanService {
   constructor(private prisma: PrismaService) {}
 
+  async findAll() {
+    return this.prisma.loan.findMany();
+  }
+
   async create(createLoanDto) {
     return this.prisma.loan.create({
       data: {
