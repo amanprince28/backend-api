@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Put, UseGuards ,Get} from '@nestjs/common';
+import { Body, Controller, Param, Post, Put, UseGuards ,Get, Delete} from '@nestjs/common';
 import { LoanService } from './loan.service';
 import { CreateLoanDto } from './dto/create-loan.dto';
 import { UpdateLoanDto } from './dto/update-loan.dto';
@@ -22,5 +22,10 @@ export class LoanController {
   @Put(':id')
   update(@Param('id') id: string, @Body() updateLoanDto: UpdateLoanDto) {
     return this.loanService.update(id, updateLoanDto);
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: string) {
+    return this.loanService.delete(id);
   }
 }

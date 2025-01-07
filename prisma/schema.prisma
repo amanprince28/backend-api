@@ -72,6 +72,8 @@ model document {
   id          String    @id @default(uuid()) @db.Uuid
   name        String    @db.VarChar(255)
   path        String    @db.VarChar(255)
+  size        String    @db.VarChar(255)
+  description        String    @db.VarChar(255)
   customer_id String?   @db.Uuid
   customer    customer? @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "document_customer-id_fkey")
 }

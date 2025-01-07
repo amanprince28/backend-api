@@ -70,7 +70,6 @@ CREATE TABLE "user" (
     "role" "Role" DEFAULT 'AGENT',
     "supervisor" UUID,
     "name" VARCHAR(255),
-    "status" BOOLEAN DEFAULT true,
 
     CONSTRAINT "user_pkey" PRIMARY KEY ("id")
 );

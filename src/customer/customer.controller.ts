@@ -36,10 +36,16 @@ export class CustomerController {
   }
 
   @Post('add-document')
-  addDocument(@Body() data: any) {
+  addDocument(@Body() data: { id: string; filesData: any[] }) {
     return this.customerService.addDocument(data);
   }
 
+  @Get('getDocument/:key')
+  async getDocument(@Param('key') key: string) {
+    return this.customerService.getDocument(key);
+  }
+
+  
   @Get('getCustomer/:key')
   async getCustomer(@Param('key') key: string) {
     return this.customerService.getCustomer(key);

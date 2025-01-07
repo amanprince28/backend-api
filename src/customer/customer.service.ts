@@ -110,15 +110,24 @@ export class CustomerService {
     });
   }
 
-  async addDocument(data: any) {
-    return this.prisma.document.create({
-      data: {
-        name: data.name,
-        path: data.path,
-        customer_id: data.customer_id,
-      }
+  async addDocument(data: { id: string; filesData: any[] }) {
+    const { id, filesData } = data;
+  
+    const promises = filesData.map(async (file) => {
+      return this.prisma.document.create({
+        data: {
+          name: file.fileName,
+          path: file.fileName,
+          customer_id: id, 
+          description: file.fileDescription,
+          size: file.fileSize.toString(),
+        },
+      });
     });
+  
+    return Promise.all(promises);
   }
+  
 
   async addCustomer(data) {
     if (data.customer_address) {
@@ -187,6 +196,12 @@ export class CustomerService {
           }
         ]
       }),
+    });
+  }
+
+  getDocument(key: string) {
+    return this.prisma.document.findMany({
+      where: { customer_id:key },
     });
   }
   

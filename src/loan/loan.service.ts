@@ -36,4 +36,10 @@ export class LoanService {
       data: updateLoanDto,
     });
   }
+
+  async delete(id: string) {
+    return this.prisma.loan.delete({
+      where: { id },
+    });
+  }
 }
