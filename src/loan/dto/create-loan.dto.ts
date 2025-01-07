@@ -7,6 +7,9 @@ export class CreateLoanDto {
     application_fee?: string;
     payment_upfront?: string;
     interest?: string;
+    amount_given?:string;
+    interest_amount?:string;
+    payment_per_term?:string;
     remark: string;
     created_by: string;
     supervisor: string;

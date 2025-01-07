@@ -91,6 +91,9 @@ model loan {
   principal_amount String?   @db.VarChar
   repayment_date   String?   @db.VarChar
   unit_of_date     String?   @db.VarChar
+  amount_given     String?   @db.VarChar
+  interest_amount  String?   @db.VarChar
+  payment_per_term String?   @db.VarChar
 
   remark           String?   @db.VarChar
   created_by       String?   @db.Uuid

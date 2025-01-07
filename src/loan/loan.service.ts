@@ -26,6 +26,9 @@ export class LoanService {
         principal_amount: createLoanDto.principalAmount.toString(),
         repayment_date: createLoanDto.repaymentDate.toString(),
         unit_of_date: createLoanDto.unitofDate.toString(),
+        amount_given:createLoanDto.amountGiven.toString(),
+        interest_amount:createLoanDto.interestAmount.toString(),
+        payment_per_term:createLoanDto.paymentPerTerm.toString(),
       },
     });
   }
