@@ -9,6 +9,19 @@ datasource db {
   extensions = [pgcrypto, uuid_ossp(map: "uuid-ossp", schema: "public")]
 }
 
+model city {
+  id       String @id(map: "city_pk") @default(uuid()) @db.Uuid
+  name     String @db.VarChar(255)
+  state_id String @db.Uuid
+  state    state  @relation(fields: [state_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "city_state_fk")
+}
+
+model country {
+  id    String  @id(map: "country_pk") @default(uuid()) @db.Uuid
+  name  String  @db.VarChar(255)
+  state state[]
+}
+
 model customer {
   id               String     @id(map: "customer_pk") @default(uuid()) @db.Uuid
   email            String?    @db.VarChar(255)
@@ -36,25 +49,71 @@ model customer {
   loan             loan[]
 }
 
-model country {
-  id     String  @id(map: "country_pk") @default(uuid()) @db.Uuid
-  name   String  @db.VarChar(255)
-  states state[]
+model document {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String    @db.VarChar(255)
+  path        String    @db.VarChar(255)
+  size        String    @db.VarChar(255)
+  description String    @db.VarChar(255)
+  customer_id String?   @db.Uuid
+  customer    customer? @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "document_customer-id_fkey")
+}
+
+model installment {
+  id               String    @id(map: "installment_pk") @default(uuid()) @db.Uuid
+  key              String?   @db.VarChar
+  installment_date String?   @db.VarChar
+  due_amount       String?   @db.VarChar
+  receiving_date   String?   @db.VarChar
+  status           String?   @db.VarChar
+  loan_id          String?   @db.Uuid
+  loan             loan?     @relation(fields: [loan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "installment_loan_fk")
+  payment          payment[]
+}
+
+model loan {
+  id               String        @id(map: "loan_pk") @default(uuid()) @db.Uuid
+  customer_id      String?       @db.Uuid
+  repayment_date   String?       @db.VarChar
+  principal_amount String?       @db.VarChar
+  deposit_amount   String?       @db.VarChar
+  application_fee  String?       @db.VarChar
+  interest         String?       @db.VarChar
+  remark           String?       @db.VarChar
+  created_by       String?       @db.Uuid
+  supervisor       String?       @db.Uuid
+  date_period      String?       @db.VarChar
+  loan_remark      String?       @db.VarChar
+  payment_up_front String?       @db.VarChar
+  unit_of_date     String?       @db.VarChar
+  installment      installment[]
+  customer         customer?     @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "loan_customer_fk")
+  loan_share       loan_share[]
+}
+
+model loan_share {
+  id      String  @id(map: "loan_share_pk") @default(uuid()) @db.Uuid
+  loan_id String? @db.Uuid
+  loan    loan?   @relation(fields: [loan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "loan_share_loan_fk")
+}
+
+model payment {
+  id              String       @id(map: "payment_pk") @default(uuid()) @db.Uuid
+  type            String?      @db.VarChar
+  installment_id  String?      @db.Uuid
+  payment_date    String?      @db.VarChar
+  amount          String?      @db.VarChar
+  balance         String?      @db.VarChar
+  account_details String?      @db.VarChar
+  installment     installment? @relation(fields: [installment_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "payment_installment_fk")
 }
 
 model state {
   id         String  @id(map: "state_pk") @default(uuid()) @db.Uuid
   name       String  @db.VarChar(255)
   country_id String  @db.Uuid
-  cities     city[]
+  city       city[]
   country    country @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "state_country_fk")
-}
-
-model city {
-  id       String @id(map: "city_pk") @default(uuid()) @db.Uuid
-  name     String @db.VarChar(255)
-  state_id String @db.Uuid
-  state    state  @relation(fields: [state_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "city_state_fk")
 }
 
 model user {
@@ -65,40 +124,7 @@ model user {
   role       Role?    @default(AGENT)
   supervisor String?  @db.Uuid
   name       String?  @db.VarChar(255)
-  status    Boolean? @default(true)
-}
-
-model document {
-  id          String    @id @default(uuid()) @db.Uuid
-  name        String    @db.VarChar(255)
-  path        String    @db.VarChar(255)
-  size        String    @db.VarChar(255)
-  description        String    @db.VarChar(255)
-  customer_id String?   @db.Uuid
-  customer    customer? @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "document_customer-id_fkey")
-}
-
-model loan {
-  id               String    @id(map: "loan_pk") @default(uuid()) @db.Uuid
-  customer_id      String?   @db.Uuid
-  
-  application_fee  String?   @db.VarChar
-  date_period      String?   @db.VarChar
-  deposit_amount   String?   @db.VarChar
-  interest         String?   @db.VarChar
-  loan_remark      String?   @db.VarChar
-  payment_up_front String?   @db.VarChar
-  principal_amount String?   @db.VarChar
-  repayment_date   String?   @db.VarChar
-  unit_of_date     String?   @db.VarChar
-  amount_given     String?   @db.VarChar
-  interest_amount  String?   @db.VarChar
-  payment_per_term String?   @db.VarChar
-
-  remark           String?   @db.VarChar
-  created_by       String?   @db.Uuid
-  supervisor       String?   @db.Uuid
-  customer         customer? @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "loan_customer_fk")
+  status     Boolean? @default(true)
 }
 
 enum Role {
