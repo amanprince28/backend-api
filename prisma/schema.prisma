@@ -19,7 +19,7 @@ model city {
 model country {
   id    String  @id(map: "country_pk") @default(uuid()) @db.Uuid
   name  String  @db.VarChar(255)
-  state state[]
+  states state[]
 }
 
 model customer {
@@ -112,7 +112,7 @@ model state {
   id         String  @id(map: "state_pk") @default(uuid()) @db.Uuid
   name       String  @db.VarChar(255)
   country_id String  @db.Uuid
-  city       city[]
+  cities       city[]
   country    country @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "state_country_fk")
 }
 
