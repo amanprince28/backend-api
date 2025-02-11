@@ -24,6 +24,10 @@ export class LoanService {
 
   async findOne(id: string) {
     return this.prisma.loan.findFirst({
+      include: {
+        customer: true,
+        installment: true, loan_share: true
+      },
       where: { generate_id: id },
     })
   }
