@@ -90,6 +90,9 @@ model loan {
   generate_id      String        @db.VarChar
   repayment_term   String?       @db.VarChar
   status           String?       @db.VarChar
+  amount_given     String?       @db.VarChar
+  interest_amount  String?       @db.VarChar
+  payment_per_term String?       @db.VarChar
   installment      installment[]
   customer         customer?     @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "loan_customer_fk")
   user             user?         @relation(fields: [supervisor], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "loan_user_fk")
