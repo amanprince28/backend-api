@@ -62,8 +62,8 @@ export class LoanService {
 
   async create(createLoanDto) {
     const generateId = this.generateUniqueAlphanumeric(8);
-    const calculateRepaymentDates = await this.calculateRepaymentDates(createLoanDto.repayment_date, createLoanDto.repayment_term, createLoanDto.unit_of_date);
-    
+    // const calculateRepaymentDates = await this.calculateRepaymentDates(createLoanDto.repayment_date, createLoanDto.repayment_term, createLoanDto.unit_of_date);
+    const calculateRepaymentDates = await this.getInstallmentDates(createLoanDto.repayment_date, createLoanDto.unit_of_date, createLoanDto.date_period, createLoanDto.repayment_term);
     const loadData = await this.prisma.loan.create({
       data: {
         generate_id: generateId,
@@ -173,5 +173,33 @@ export class LoanService {
 
     return dates;
   }
+
+  getInstallmentDates(startDate: string, period: any, interval: number, repaymentTerm: number): string[] {
+    const dates: string[] = [];
+    let currentDate = new Date(startDate);
+    
+    for (let i = 0; i < repaymentTerm; i++) {
+        dates.push(`${currentDate.getDate()} ${currentDate.toLocaleString('default', { month: 'short' })} ${currentDate.getFullYear()}`);
+        
+        switch (period) {
+            case 'day':
+                currentDate.setDate(currentDate.getDate() + interval);
+                break;
+            case 'week':
+                currentDate.setDate(currentDate.getDate() + interval * 7);
+                break;
+            case 'month':
+                currentDate.setMonth(currentDate.getMonth() + interval);
+                break;
+            case 'year':
+                currentDate.setFullYear(currentDate.getFullYear() + interval);
+                break;
+            default:
+                throw new Error('Invalid period type');
+        }
+    }
+    
+    return dates;
+}
   
 }
