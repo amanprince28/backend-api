@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
 import { UpdateLoanDto } from './dto/update-loan.dto';
 import { addDays, addWeeks, addMonths, addYears, format } from 'date-fns';
+import { pickBy } from 'lodash';
 
 @Injectable()
 export class LoanService {
@@ -27,12 +28,33 @@ export class LoanService {
     })
   }
 
-  async findAll(skip: number, take: number, filter: any) {
-    return this.prisma.loan.findMany({
-      include: {
-        customer: true,
-      }
+  async findAll(page: number, limit: number, filter: any) {
+    const skip = (page - 1) * limit;
+    const where = {
+      status: filter?.status,
+      customer_id: filter?.customer_id,
+    };
+
+    const loans = await this.prisma.loan.findMany({
+      where: pickBy(where),
+      skip,
+      take: limit,
+      include: { customer: true, installment: true, loan_share: true },
     });
+
+    const totalCount = await this.prisma.loan.count({ where });
+
+    return {
+      data: loans,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: page,
+      limit,
+    };
+    // return this.prisma.loan.findMany({
+    //   include: {
+    //     customer: true,
+    //   }
+    // });
   }
 
   async create(createLoanDto) {

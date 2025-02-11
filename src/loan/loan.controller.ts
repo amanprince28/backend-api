@@ -15,7 +15,7 @@ export class LoanController {
 
   @Get()
   async findAll(
-    @Query('page') page: number = 0,
+    @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
     @Query('filter') filter: any
   ) {
