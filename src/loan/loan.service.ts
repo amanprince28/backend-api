@@ -29,14 +29,12 @@ export class LoanService {
   }
 
   async findAll(page: number, limit: number, filter: any) {
+    if (page < 1) {
+      page = 1;
+    }
     const skip = (page - 1) * limit;
-    // const where = {
-    //   status: filter?.status,
-    //   customer_id: filter?.customer_id,
-    // };
 
     const loans = await this.prisma.loan.findMany({
-      // where: pickBy(where),
       skip,
       take: limit,
       include: { customer: true, installment: true, loan_share: true },
