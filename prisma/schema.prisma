@@ -67,6 +67,7 @@ model installment {
   receiving_date   String?   @db.VarChar
   status           String?   @db.VarChar
   loan_id          String?   @db.Uuid
+  accepted_amount  String?   @db.VarChar
   loan             loan?     @relation(fields: [loan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "installment_loan_fk")
   payment          payment[]
 }
@@ -91,6 +92,7 @@ model loan {
   status           String?       @db.VarChar
   installment      installment[]
   customer         customer?     @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "loan_customer_fk")
+  user             user?         @relation(fields: [supervisor], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "loan_user_fk")
   loan_share       loan_share[]
 }
 
@@ -128,6 +130,7 @@ model user {
   supervisor String?  @db.Uuid
   name       String?  @db.VarChar(255)
   status     Boolean? @default(true)
+  loan       loan[]
 }
 
 enum Role {

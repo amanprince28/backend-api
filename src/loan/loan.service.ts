@@ -55,7 +55,7 @@ export class LoanService {
     return this.prisma.loan.findMany({
       include: {
         customer: true,
-        installment: true, loan_share: true
+        installment: true, loan_share: true, user: true
       }
     });
   }
@@ -68,7 +68,7 @@ export class LoanService {
       data: {
         generate_id: generateId,
         customer: { connect: { id: createLoanDto.customer_id } },
-        supervisor: createLoanDto.supervisor,
+        user: { connect: { id: createLoanDto.supervisor } },
         principal_amount: createLoanDto.principal_amount.toString(),
         deposit_amount: createLoanDto.deposit_amount.toString(),
         application_fee: createLoanDto.application_fee.toString(),
@@ -181,7 +181,7 @@ export class LoanService {
     for (let i = 0; i < repaymentTerm; i++) {
         dates.push(`${currentDate.getDate()} ${currentDate.toLocaleString('default', { month: 'short' })} ${currentDate.getFullYear()}`);
         
-        switch (period) {
+        switch (period.toLowerCase()) {
             case 'day':
                 currentDate.setDate(currentDate.getDate() + interval);
                 break;
