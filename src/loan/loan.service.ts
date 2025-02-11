@@ -1,36 +1,64 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
-import { CreateLoanDto } from './dto/create-loan.dto';
 import { UpdateLoanDto } from './dto/update-loan.dto';
+import { addDays, addWeeks, addMonths, addYears, format } from 'date-fns';
 
 @Injectable()
 export class LoanService {
   constructor(private prisma: PrismaService) {}
+
+  
+  generateUniqueAlphanumeric(length: number): string {
+    const generatedStrings = new Set<string>();
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let uniqueString: string;
+
+    do {
+      uniqueString = Array.from({ length }, () => characters.charAt(Math.floor(Math.random() * characters.length))).join('');
+    } while (generatedStrings.has(uniqueString));
+
+    generatedStrings.add(uniqueString);
+    return uniqueString;
+  }
 
   async findAll() {
     return this.prisma.loan.findMany();
   }
 
   async create(createLoanDto) {
-    return this.prisma.loan.create({
+    const generateId = this.generateUniqueAlphanumeric(8);
+    const calculateRepaymentDates = await this.calculateRepaymentDates(createLoanDto.repayment_date, createLoanDto.repayment_term, createLoanDto.unit_of_date);
+    
+    const loadData = await this.prisma.loan.create({
       data: {
-        customer: { connect: { id: createLoanDto.customerId } },
+        generate_id: generateId,
+        customer: { connect: { id: createLoanDto.customer_id } },
         supervisor: createLoanDto.supervisor,
-        
-        application_fee: createLoanDto.applicationFee.toString(),
-        date_period: createLoanDto.datePeriod.toString(),
-        deposit_amount: createLoanDto.depositAmount.toString(),
+        principal_amount: createLoanDto.principal_amount.toString(),
+        deposit_amount: createLoanDto.deposit_amount.toString(),
+        application_fee: createLoanDto.application_fee.toString(),
+        payment_up_front: createLoanDto.payment_up_front.toString(),
+        unit_of_date: createLoanDto.unit_of_date.toString(),
+        date_period: createLoanDto.date_period.toString(),
+        repayment_term: createLoanDto.repayment_term.toString(),
         interest: createLoanDto.interest.toString(),
-        loan_remark: createLoanDto.loanRemark.toString(),
-        payment_up_front: createLoanDto.paymentUpfront.toString(),
-        principal_amount: createLoanDto.principalAmount.toString(),
-        repayment_date: createLoanDto.repaymentDate.toString(),
-        unit_of_date: createLoanDto.unitofDate.toString(),
-        // amount_given: createLoanDto.amountGiven.toString(),
-        // interest_amount: createLoanDto.interestAmount.toString(),
-        // payment_per_term: createLoanDto.paymentPerTerm.toString(),
+        repayment_date: createLoanDto.repayment_date.toString(),
+        loan_remark: createLoanDto.loan_remark.toString(),
+        status: createLoanDto.status,
       },
     });
+
+    const installmentData = await Promise.all(calculateRepaymentDates.map(async (date, index) => {
+      const generateId = this.generateUniqueAlphanumeric(8);
+      await this.prisma.installment.create({
+        data: {
+          generate_id: generateId,
+          installment_date: format(date, 'yyyy-MM-dd'),
+          loan: { connect: { id: loadData.id } },
+        }
+      });
+    }));
+    return loadData;
   }
 
   async update(id: string, updateLoanDto: UpdateLoanDto) {
@@ -45,4 +73,70 @@ export class LoanService {
       where: { id },
     });
   }
+
+  createInstallmentDates() {
+
+    const unitPeriods = ['day', 'week', 'month', 'year'] as const;
+    type UnitPeriod = (typeof unitPeriods)[number];
+
+    const repaymentDate = new Date('2025-02-01'); // Starting repayment date
+    const repaymentTerm = 5; // Number of repayments
+    const unitPeriod: UnitPeriod = 'day'; // Change this to 'day', 'week', 'month', or 'year'
+
+    function calculateRepaymentDates(startDate: Date, term: number, unit: UnitPeriod): Date[] {
+      const dates: Date[] = [];
+      let currentDate = startDate;
+
+      for (let i = 0; i < term; i++) {
+        switch (unit) {
+          case 'day':
+            currentDate = addDays(currentDate, 1);
+            break;
+          case 'week':
+            currentDate = addWeeks(currentDate, 1);
+            break;
+          case 'month':
+            currentDate = addMonths(currentDate, 1);
+            break;
+          case 'year':
+            currentDate = addYears(currentDate, 1);
+            break;
+        }
+        dates.push(new Date(currentDate));
+      }
+
+      return dates;
+    }
+
+    const repaymentDates = calculateRepaymentDates(repaymentDate, repaymentTerm, unitPeriod);
+    console.log(repaymentDates.map(date => date.toDateString()));
+
+
+  }
+  
+  calculateRepaymentDates(startDate: Date, term: number, unit: any): Date[] {
+    const dates: Date[] = [];
+    let currentDate: any = startDate;
+
+    for (let i = 0; i < term; i++) {
+      switch (unit) {
+        case 'day':
+          currentDate = addDays(currentDate, 1);
+          break;
+        case 'week':
+          currentDate = addWeeks(currentDate, 1);
+          break;
+        case 'month':
+          currentDate = addMonths(currentDate, 1);
+          break;
+        case 'year':
+          currentDate = addYears(currentDate, 1);
+          break;
+      }
+      dates.push(new Date(currentDate));
+    }
+
+    return dates;
+  }
+  
 }

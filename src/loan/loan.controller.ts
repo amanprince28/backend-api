@@ -28,4 +28,9 @@ export class LoanController {
   async delete(@Param('id') id: string) {
     return this.loanService.delete(id);
   }
+
+  @Get('createInstallmentDates')
+  createInstallmentDates() {
+    return this.loanService.createInstallmentDates();
+  }
 }
