@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Put, UseGuards ,Get, Delete} from '@nestjs/common';
+import { Body, Controller, Param, Post, Put, UseGuards ,Get, Delete, Query} from '@nestjs/common';
 import { LoanService } from './loan.service';
 import { CreateLoanDto } from './dto/create-loan.dto';
 import { UpdateLoanDto } from './dto/update-loan.dto';
@@ -8,9 +8,18 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 export class LoanController {
   constructor(private readonly loanService: LoanService) {}
 
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return this.loanService.findOne(id);
+  }
+
   @Get()
-  async findAll() {
-    return this.loanService.findAll();
+  async findAll(
+    @Query('page') page: number = 0,
+    @Query('limit') limit: number = 10,
+    @Query('filter') filter: any
+  ) {
+    return this.loanService.findAll(Number(page), Number(limit), filter);
   }
 
   // @UseGuards(JwtAuthGuard)

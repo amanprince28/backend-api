@@ -21,8 +21,18 @@ export class LoanService {
     return uniqueString;
   }
 
-  async findAll() {
-    return this.prisma.loan.findMany();
+  async findOne(id: string) {
+    return this.prisma.loan.findFirst({
+      where: { generate_id: id },
+    })
+  }
+
+  async findAll(skip: number, take: number, filter: any) {
+    return this.prisma.loan.findMany({
+      include: {
+        customer: true,
+      }
+    });
   }
 
   async create(createLoanDto) {
