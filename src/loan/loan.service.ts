@@ -29,30 +29,31 @@ export class LoanService {
   }
 
   async findAll(page: number, limit: number, filter: any) {
-    if (page < 1) {
-      page = 1;
-    }
-    const skip = (page - 1) * limit;
+    // if (page < 1) {
+    //   page = 1;
+    // }
+    // const skip = (page - 1) * limit;
 
-    const loans = await this.prisma.loan.findMany({
-      skip,
-      take: limit,
-      include: { customer: true, installment: true, loan_share: true },
-    });
-
-    const totalCount = await this.prisma.loan.count();
-
-    return {
-      data: loans,
-      totalPages: Math.ceil(totalCount / limit),
-      currentPage: page,
-      limit,
-    };
-    // return this.prisma.loan.findMany({
-    //   include: {
-    //     customer: true,
-    //   }
+    // const loans = await this.prisma.loan.findMany({
+    //   skip,
+    //   take: limit,
+    //   include: { customer: true, installment: true, loan_share: true },
     // });
+
+    // const totalCount = await this.prisma.loan.count();
+
+    // return {
+    //   data: loans,
+    //   totalPages: Math.ceil(totalCount / limit),
+    //   currentPage: page,
+    //   limit,
+    // };
+    return this.prisma.loan.findMany({
+      include: {
+        customer: true,
+        installment: true, loan_share: true
+      }
+    });
   }
 
   async create(createLoanDto) {
