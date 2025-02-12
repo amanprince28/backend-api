@@ -126,10 +126,8 @@ export class LoanService {
     });
   }
 
-  async updateInstallment(id: string, updateLoanDto: UpdateLoanDto) {
-    if (updateLoanDto.installment) {
-      const installments = updateLoanDto.installment;
-      delete updateLoanDto.installment;
+  async updateInstallment(id: string, installments: any) {
+    if (installments.length > 0) {
       await Promise.all(installments.map(async (installment) => {
         await this.prisma.installment.update({
           where: { id: installment.id },
@@ -138,7 +136,7 @@ export class LoanService {
       }));
     }
     return this.prisma.loan.findFirst({
-      where: { id },
+      where: { generate_id: id },
     });
   }
 

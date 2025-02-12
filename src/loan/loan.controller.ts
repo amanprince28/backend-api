@@ -34,8 +34,8 @@ export class LoanController {
   }
   
   @Put('installment/:id')
-  updateInstallment(@Param('id') id: string, @Body() updateLoanDto: UpdateLoanDto) {
-    return this.loanService.updateInstallment(id, updateLoanDto);
+  updateInstallment(@Param('id') id: string, @Body() updateInstallment: any) {
+    return this.loanService.updateInstallment(id, updateInstallment);
   }
 
   @Delete(':id')
