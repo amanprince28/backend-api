@@ -3,14 +3,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from 'nestjs-prisma';
-import { CustomerService } from './customer/customer.service';
-import { CustomerController } from './customer/customer.controller';
 import { CustomerModule } from './customer/customer.module';
 import { CountryModule } from './country/country.module';
 import { UserModule } from './user/user.module';
 import { CompanyModule } from './company/company.module';
 import { AuthModule } from './auth/auth.module';
 import { LoanModule } from './loan/loan.module';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -33,6 +32,7 @@ import { LoanModule } from './loan/loan.module';
     CompanyModule,
     AuthModule,
     LoanModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
