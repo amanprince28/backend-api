@@ -100,6 +100,26 @@ export class LoanService {
   }
 
   async update(id: string, updateLoanDto: UpdateLoanDto) {
+    if (updateLoanDto.installment) {
+      const installments = updateLoanDto.installment;
+      delete updateLoanDto.installment;
+      await Promise.all(installments.map(async (installment) => {
+        await this.prisma.installment.update({
+          where: { id: installment.id },
+          data: installment,
+        });
+      }));
+    }
+    if (updateLoanDto.loan_share) {
+      const loanShares = updateLoanDto.loan_share;
+      delete updateLoanDto.loan_share;
+      await Promise.all(loanShares.map(async (loanShare) => {
+        await this.prisma.loan_share.update({
+          where: { id: loanShare.id },
+          data: loanShare,
+        });
+      }));
+    }
     return this.prisma.loan.update({
       where: { id },
       data: updateLoanDto,
