@@ -59,6 +59,7 @@ export class PaymentService {
 
   async getByLoanId(id: string) {
     return this.prisma.payment.findMany({
+      include: { installment: true },
       where: {
         loan_id: id,
       },
