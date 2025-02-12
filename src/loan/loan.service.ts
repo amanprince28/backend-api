@@ -26,7 +26,7 @@ export class LoanService {
     return this.prisma.loan.findFirst({
       include: {
         customer: true,
-        installment: true, loan_share: true
+        installment: true, loan_share: true,  user: true
       },
       where: { generate_id: id },
     })
