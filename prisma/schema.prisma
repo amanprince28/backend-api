@@ -97,6 +97,7 @@ model loan {
   customer         customer?     @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "loan_customer_fk")
   user             user?         @relation(fields: [supervisor], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "loan_user_fk")
   loan_share       loan_share[]
+  payment          payment[]
 }
 
 model loan_share {
@@ -113,7 +114,9 @@ model payment {
   amount          String?      @db.VarChar
   balance         String?      @db.VarChar
   account_details String?      @db.VarChar
+  loan_id         String?      @db.Uuid
   installment     installment? @relation(fields: [installment_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "payment_installment_fk")
+  loan            loan?        @relation(fields: [loan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "payment_loan_fk")
 }
 
 model state {
