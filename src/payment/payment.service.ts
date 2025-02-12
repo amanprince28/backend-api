@@ -57,6 +57,14 @@ export class PaymentService {
     });
   }
 
+  async getByLoanId(id: string) {
+    return this.prisma.payment.findMany({
+      where: {
+        loan_id: id,
+      },
+    });
+  }
+
   async update(id: string, updatePaymentDto: UpdatePaymentDto) {
     return this.prisma.payment.update({
       where: { id },

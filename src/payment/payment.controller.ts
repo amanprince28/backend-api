@@ -22,6 +22,12 @@ export class PaymentController {
     return this.paymentService.findOne(id);
   }
 
+
+  @Get('get-by-loan/:id')
+  getByLoanId(@Param('id') id: string) {
+    return this.paymentService.getByLoanId(id);
+  }
+
   @Put(':id')
   update(@Param('id') id: string, @Body() updatePaymentDto: UpdatePaymentDto) {
     return this.paymentService.update(id, updatePaymentDto);
