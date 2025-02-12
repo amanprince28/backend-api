@@ -14,10 +14,10 @@ export class PaymentService {
       const payment = createPaymentDto[i];
       if (payment.installment_id) {
         const _installment = await this.prisma.installment.findFirst({
-          where: { installment_date: payment.installment_id },
+          where: { id: payment.installment_id },
         });
         if (!_installment) {
-          throw new Error(`Loan with id ${payment.installment_id} not found`);
+          throw new Error(`installment with id ${payment.installment_id} not found`);
         }
       }
       const newData: any = {
