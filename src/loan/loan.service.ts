@@ -96,6 +96,17 @@ export class LoanService {
         }
       });
     }));
+
+    const paymentData = await this.prisma.payment.create({
+      data: {
+        type: 'Out',
+        payment_date: createLoanDto.repayment_date,
+        amount: createLoanDto.amount_given?.toString(),
+        balance: createLoanDto.amount_given?.toString(),
+        account_details: 'Loan Disbursement',
+        loan: { connect: { id: loadData.id } },
+      }
+    });
     return loadData;
   }
 
