@@ -32,6 +32,11 @@ export class LoanController {
   update(@Param('id') id: string, @Body() updateLoanDto: UpdateLoanDto) {
     return this.loanService.update(id, updateLoanDto);
   }
+  
+  @Put('installment/:id')
+  updateInstallment(@Param('id') id: string, @Body() updateLoanDto: UpdateLoanDto) {
+    return this.loanService.updateInstallment(id, updateLoanDto);
+  }
 
   @Delete(':id')
   async delete(@Param('id') id: string) {
