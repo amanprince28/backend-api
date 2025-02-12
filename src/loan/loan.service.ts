@@ -80,9 +80,9 @@ export class LoanService {
         repayment_date: createLoanDto.repayment_date.toString(),
         loan_remark: createLoanDto.loan_remark.toString(),
         status: createLoanDto.status,
-        amount_given: createLoanDto.amount_given,
-        interest_amount: createLoanDto.interest_amount,
-        payment_per_term: createLoanDto.payment_per_term,
+        amount_given: createLoanDto.amount_given?.toString(),
+        interest_amount: createLoanDto.interest_amount?.toString(),
+        payment_per_term: createLoanDto.payment_per_term?.toString(),
       },
     });
 
