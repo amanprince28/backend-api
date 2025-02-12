@@ -107,6 +107,12 @@ export class LoanService {
   }
 
   async delete(id: string) {
+    const deleteInstallment = await this.prisma.installment.deleteMany({
+      where: { loan_id: id },
+    })
+    const loadShare = await this.prisma.loan_share.deleteMany({
+      where: { loan_id: id },
+    })
     return this.prisma.loan.delete({
       where: { id },
     });
