@@ -1,13 +1,21 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards, Headers } from '@nestjs/common';
 import { CustomerService } from './customer.service';
 import { CreateCustomerDto, UpdateCustomerDto } from './customer.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { LocalAuthGuard } from 'src/auth/local-auth.guard';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('customer')
 export class CustomerController {
     constructor(private readonly customerService: CustomerService) {}
 
+  @UseGuards(AuthGuard)
   @Post()
-  async create(@Body() createCustomerDto: CreateCustomerDto) {
+  async create(@Body() createCustomerDto: CreateCustomerDto, @Headers() headers: any) {
+    console.log(headers);
+    if (headers.auth_user) {
+      createCustomerDto.created_by = headers.auth_user.sub;
+    }
     return this.customerService.create(createCustomerDto);
   }
 
@@ -49,5 +57,12 @@ export class CustomerController {
   @Get('getCustomer/:key')
   async getCustomer(@Param('key') key: string) {
     return this.customerService.getCustomer(key);
+  }
+
+  @Post('get-customer-status')
+  getCustomerStatus(
+    @Body() data: { key: string }
+  ) {
+    return this.customerService.getCustomerStatus(data.key);
   }
 }

@@ -204,5 +204,46 @@ export class CustomerService {
       where: { customer_id:key },
     });
   }
+
+  async getCustomerStatus(key: string) {
+    const customer = await this.prisma.customer.findFirst({
+      where: pickBy({
+        OR: [
+          {
+            email: {
+              contains: key,
+              mode: "insensitive"
+            }
+          },
+          {
+            ic: {
+              contains: key,
+              mode: "insensitive"
+            }
+          }
+        ]
+      }),
+    });
+    // Find Load
+    const loanStatusCounts = await this.prisma.loan.groupBy({
+      by: ['status', 'supervisor'],
+      where: {
+        customer_id: customer.id,
+      },
+      _count: {
+        status: true,
+        supervisor: true,
+      },
+    });
+    await Promise.all(loanStatusCounts.map(async (loan: any) => {
+      const supervisor = await this.prisma.user.findUnique({
+        where: {
+          id: loan.supervisor
+        }
+      });
+      loan.supervisorObj = supervisor;
+    }));
+    return loanStatusCounts;
+  }
   
 }
