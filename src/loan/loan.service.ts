@@ -26,7 +26,7 @@ export class LoanService {
     return this.prisma.loan.findFirst({
       include: {
         customer: true,
-        installment: true, loan_share: true,  user: true
+        installment: true, loan_share: true,  user: true,user_2:true
       },
       where: { generate_id: id },
     })
@@ -69,6 +69,7 @@ export class LoanService {
         generate_id: generateId,
         customer: { connect: { id: createLoanDto.customer_id } },
         user: { connect: { id: createLoanDto.supervisor } },
+        user_2:{ connect: { id: createLoanDto.supervisor_2 } },
         principal_amount: createLoanDto.principal_amount.toString(),
         deposit_amount: createLoanDto.deposit_amount.toString(),
         application_fee: createLoanDto.application_fee.toString(),
@@ -254,6 +255,26 @@ export class LoanService {
     }
     
     return dates;
+}
+
+async getLoanStatusByPassport(id:any){
+  const getUserDetails = await this.prisma.customer.findFirst({
+    where: {
+      OR: [
+        { ic: id },
+        { passport: id }
+      ]
+    }
+  });
+  console.log(getUserDetails);
+  return this.prisma.loan.findMany({
+    where: { customer_id:getUserDetails.id },
+    include:{
+    installment: true, loan_share: true, user: true
+  
+}});
+
+
 }
   
 }

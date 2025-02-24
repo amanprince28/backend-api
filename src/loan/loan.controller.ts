@@ -47,4 +47,11 @@ export class LoanController {
   createInstallmentDates() {
     return this.loanService.createInstallmentDates();
   }
+
+  @Get('user-status/:passportNumber')
+  async getLoanStatusByPassport(@Param('passportNumber') passportNumber: string) {
+    return this.loanService.getLoanStatusByPassport(passportNumber);
+  }
+
+
 }

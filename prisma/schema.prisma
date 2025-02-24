@@ -83,6 +83,7 @@ model loan {
   remark           String?       @db.VarChar
   created_by       String?       @db.Uuid
   supervisor       String?       @db.Uuid
+  supervisor_2     String?       @db.Uuid // Added second supervisor field
   date_period      String?       @db.VarChar
   loan_remark      String?       @db.VarChar
   payment_up_front String?       @db.VarChar
@@ -95,7 +96,8 @@ model loan {
   payment_per_term String?       @db.VarChar
   installment      installment[]
   customer         customer?     @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "loan_customer_fk")
-  user             user?         @relation(fields: [supervisor], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "loan_user_fk")
+  user             user?         @relation(name: "supervisor1", fields: [supervisor], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "loan_user_fk")
+  user_2           user?         @relation(name: "supervisor2", fields: [supervisor_2], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "loan_user_fk_2")
   loan_share       loan_share[]
   payment          payment[]
 }
@@ -136,8 +138,12 @@ model user {
   supervisor String?  @db.Uuid
   name       String?  @db.VarChar(255)
   status     Boolean? @default(true)
-  loan       loan[]
+
+  // Relations: Loans where this user is a supervisor
+  supervised_loans_1 loan[] @relation(name: "supervisor1") // Primary supervisor
+  supervised_loans_2 loan[] @relation(name: "supervisor2") // Secondary supervisor
 }
+
 
 enum Role {
   ADMIN

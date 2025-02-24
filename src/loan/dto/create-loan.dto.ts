@@ -13,4 +13,5 @@ export class CreateLoanDto {
     remark: string;
     created_by: string;
     supervisor: string;
+    supervisor_2?:string;
 }
