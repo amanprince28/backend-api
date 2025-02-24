@@ -8,14 +8,15 @@ import { pickBy } from 'lodash';
 export class LoanService {
   constructor(private prisma: PrismaService) {}
 
-  
   generateUniqueAlphanumeric(length: number): string {
     const generatedStrings = new Set<string>();
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let uniqueString: string;
 
     do {
-      uniqueString = Array.from({ length }, () => characters.charAt(Math.floor(Math.random() * characters.length))).join('');
+      uniqueString = Array.from({ length }, () =>
+        characters.charAt(Math.floor(Math.random() * characters.length)),
+      ).join('');
     } while (generatedStrings.has(uniqueString));
 
     generatedStrings.add(uniqueString);
@@ -26,10 +27,13 @@ export class LoanService {
     return this.prisma.loan.findFirst({
       include: {
         customer: true,
-        installment: true, loan_share: true,  user: true,user_2:true
+        installment: true,
+        loan_share: true,
+        user: true,
+        user_2: true,
       },
       where: { generate_id: id },
-    })
+    });
   }
 
   async findAll(page: number, limit: number, filter: any) {
@@ -55,21 +59,28 @@ export class LoanService {
     return this.prisma.loan.findMany({
       include: {
         customer: true,
-        installment: true, loan_share: true, user: true
-      }
+        installment: true,
+        loan_share: true,
+        user: true,
+      },
     });
   }
 
   async create(createLoanDto) {
     const generateId = this.generateUniqueAlphanumeric(8);
     // const calculateRepaymentDates = await this.calculateRepaymentDates(createLoanDto.repayment_date, createLoanDto.repayment_term, createLoanDto.unit_of_date);
-    const calculateRepaymentDates = await this.getInstallmentDates(createLoanDto.repayment_date, createLoanDto.unit_of_date, createLoanDto.date_period, createLoanDto.repayment_term);
+    const calculateRepaymentDates = await this.getInstallmentDates(
+      createLoanDto.repayment_date,
+      createLoanDto.unit_of_date,
+      createLoanDto.date_period,
+      createLoanDto.repayment_term,
+    );
     const loadData = await this.prisma.loan.create({
       data: {
         generate_id: generateId,
         customer: { connect: { id: createLoanDto.customer_id } },
         user: { connect: { id: createLoanDto.supervisor } },
-        user_2:{ connect: { id: createLoanDto.supervisor_2 } },
+        user_2: { connect: { id: createLoanDto.supervisor_2 } },
         principal_amount: createLoanDto.principal_amount.toString(),
         deposit_amount: createLoanDto.deposit_amount.toString(),
         application_fee: createLoanDto.application_fee.toString(),
@@ -87,16 +98,18 @@ export class LoanService {
       },
     });
 
-    const installmentData = await Promise.all(calculateRepaymentDates.map(async (date, index) => {
-      const generateId = this.generateUniqueAlphanumeric(8);
-      await this.prisma.installment.create({
-        data: {
-          generate_id: generateId,
-          installment_date: format(date, 'yyyy-MM-dd'),
-          loan: { connect: { id: loadData.id } },
-        }
-      });
-    }));
+    const installmentData = await Promise.all(
+      calculateRepaymentDates.map(async (date, index) => {
+        const generateId = this.generateUniqueAlphanumeric(8);
+        await this.prisma.installment.create({
+          data: {
+            generate_id: generateId,
+            installment_date: format(date, 'yyyy-MM-dd'),
+            loan: { connect: { id: loadData.id } },
+          },
+        });
+      }),
+    );
 
     const paymentData = await this.prisma.payment.create({
       data: {
@@ -106,7 +119,7 @@ export class LoanService {
         balance: createLoanDto.amount_given?.toString(),
         account_details: 'Loan Disbursement',
         loan: { connect: { id: loadData.id } },
-      }
+      },
     });
     return loadData;
   }
@@ -115,22 +128,26 @@ export class LoanService {
     if (updateLoanDto.installment) {
       const installments = updateLoanDto.installment;
       delete updateLoanDto.installment;
-      await Promise.all(installments.map(async (installment) => {
-        await this.prisma.installment.update({
-          where: { id: installment.id },
-          data: installment,
-        });
-      }));
+      await Promise.all(
+        installments.map(async (installment) => {
+          await this.prisma.installment.update({
+            where: { id: installment.id },
+            data: installment,
+          });
+        }),
+      );
     }
     if (updateLoanDto.loan_share) {
       const loanShares = updateLoanDto.loan_share;
       delete updateLoanDto.loan_share;
-      await Promise.all(loanShares.map(async (loanShare) => {
-        await this.prisma.loan_share.update({
-          where: { id: loanShare.id },
-          data: loanShare,
-        });
-      }));
+      await Promise.all(
+        loanShares.map(async (loanShare) => {
+          await this.prisma.loan_share.update({
+            where: { id: loanShare.id },
+            data: loanShare,
+          });
+        }),
+      );
     }
     return this.prisma.loan.update({
       where: { id },
@@ -140,12 +157,14 @@ export class LoanService {
 
   async updateInstallment(id: string, installments: any) {
     if (installments.length > 0) {
-      await Promise.all(installments.map(async (installment) => {
-        await this.prisma.installment.update({
-          where: { id: installment.id },
-          data: installment,
-        });
-      }));
+      await Promise.all(
+        installments.map(async (installment) => {
+          await this.prisma.installment.update({
+            where: { id: installment.id },
+            data: installment,
+          });
+        }),
+      );
     }
     return this.prisma.loan.findFirst({
       where: { generate_id: id },
@@ -155,17 +174,16 @@ export class LoanService {
   async delete(id: string) {
     const deleteInstallment = await this.prisma.installment.deleteMany({
       where: { loan_id: id },
-    })
+    });
     const loadShare = await this.prisma.loan_share.deleteMany({
       where: { loan_id: id },
-    })
+    });
     return this.prisma.loan.delete({
       where: { id },
     });
   }
 
   createInstallmentDates() {
-
     const unitPeriods = ['day', 'week', 'month', 'year'] as const;
     type UnitPeriod = (typeof unitPeriods)[number];
 
@@ -173,7 +191,11 @@ export class LoanService {
     const repaymentTerm = 5; // Number of repayments
     const unitPeriod: UnitPeriod = 'day'; // Change this to 'day', 'week', 'month', or 'year'
 
-    function calculateRepaymentDates(startDate: Date, term: number, unit: UnitPeriod): Date[] {
+    function calculateRepaymentDates(
+      startDate: Date,
+      term: number,
+      unit: UnitPeriod,
+    ): Date[] {
       const dates: Date[] = [];
       let currentDate = startDate;
 
@@ -198,12 +220,14 @@ export class LoanService {
       return dates;
     }
 
-    const repaymentDates = calculateRepaymentDates(repaymentDate, repaymentTerm, unitPeriod);
-    console.log(repaymentDates.map(date => date.toDateString()));
-
-
+    const repaymentDates = calculateRepaymentDates(
+      repaymentDate,
+      repaymentTerm,
+      unitPeriod,
+    );
+    console.log(repaymentDates.map((date) => date.toDateString()));
   }
-  
+
   calculateRepaymentDates(startDate: Date, term: number, unit: any): Date[] {
     const dates: Date[] = [];
     let currentDate: any = startDate;
@@ -229,52 +253,60 @@ export class LoanService {
     return dates;
   }
 
-  getInstallmentDates(startDate: string, period: any, interval: number, repaymentTerm: number): string[] {
+  getInstallmentDates(
+    startDate: string,
+    period: any,
+    interval: number,
+    repaymentTerm: number,
+  ): string[] {
     const dates: string[] = [];
     let currentDate = new Date(startDate);
-    
+
     for (let i = 0; i < repaymentTerm; i++) {
-        dates.push(`${currentDate.getDate()} ${currentDate.toLocaleString('default', { month: 'short' })} ${currentDate.getFullYear()}`);
-        
-        switch (period.toLowerCase()) {
-            case 'day':
-                currentDate.setDate(currentDate.getDate() + interval);
-                break;
-            case 'week':
-                currentDate.setDate(currentDate.getDate() + interval * 7);
-                break;
-            case 'month':
-                currentDate.setMonth(currentDate.getMonth() + interval);
-                break;
-            case 'year':
-                currentDate.setFullYear(currentDate.getFullYear() + interval);
-                break;
-            default:
-                throw new Error('Invalid period type');
-        }
+      dates.push(
+        `${currentDate.getDate()} ${currentDate.toLocaleString('default', { month: 'short' })} ${currentDate.getFullYear()}`,
+      );
+
+      switch (period.toLowerCase()) {
+        case 'day':
+          currentDate.setDate(currentDate.getDate() + interval);
+          break;
+        case 'week':
+          currentDate.setDate(currentDate.getDate() + interval * 7);
+          break;
+        case 'month':
+          currentDate.setMonth(currentDate.getMonth() + interval);
+          break;
+        case 'year':
+          currentDate.setFullYear(currentDate.getFullYear() + interval);
+          break;
+        default:
+          throw new Error('Invalid period type');
+      }
+    }
+
+    return dates;
+  }
+
+  async getLoanStatusByPassport(id: any) {
+    const getUserDetails = await this.prisma.customer.findFirst({
+      where: {
+        OR: [{ ic: id }, { passport: id }],
+      },
+    });
+    console.log(getUserDetails);
+    if(getUserDetails){
+      const loanData = this.prisma.loan.findMany({
+        where: { customer_id: getUserDetails.id },
+        include: {
+          installment: true,
+          loan_share: true,
+          user: true,
+        },
+      });
+      return loanData
     }
     
-    return dates;
-}
-
-async getLoanStatusByPassport(id:any){
-  const getUserDetails = await this.prisma.customer.findFirst({
-    where: {
-      OR: [
-        { ic: id },
-        { passport: id }
-      ]
-    }
-  });
-  console.log(getUserDetails);
-  return this.prisma.loan.findMany({
-    where: { customer_id:getUserDetails.id },
-    include:{
-    installment: true, loan_share: true, user: true
-  
-}});
-
-
-}
-  
+    return []
+  }
 }
