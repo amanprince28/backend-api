@@ -25,6 +25,7 @@ model country {
 model customer {
   id               String     @id(map: "customer_pk") @default(uuid()) @db.Uuid
   email            String?    @db.VarChar(255)
+  generate_id      String?   @db.VarChar
   gender           String?    @db.VarChar(255)
   ic               String?    @db.VarChar(255)
   name             String?    @db.VarChar(255)
@@ -86,7 +87,6 @@ model loan {
   supervisor_2     String?       @db.Uuid // Added second supervisor field
   date_period      String?       @db.VarChar
   loan_remark      String?       @db.VarChar
-  payment_up_front String?       @db.VarChar
   unit_of_date     String?       @db.VarChar
   generate_id      String        @db.VarChar
   repayment_term   String?       @db.VarChar
@@ -138,6 +138,7 @@ model user {
   supervisor String?  @db.Uuid
   name       String?  @db.VarChar(255)
   status     Boolean? @default(true)
+  generate_id      String?   @db.VarChar
 
   // Relations: Loans where this user is a supervisor
   supervised_loans_1 loan[] @relation(name: "supervisor1") // Primary supervisor
@@ -150,3 +151,12 @@ enum Role {
   LEAD
   AGENT
 }
+
+model Tracker {
+  id         Int    @id @default(autoincrement()) // Primary Key
+  category   String // 'loan', 'customer', 'user', etc.
+  year       Int    // Year of tracking
+  lastNumber Int    // Last used running number for the given category, year, and month
+  @@unique([category, year]) // Ensure one record per category, year, and month
+}
+

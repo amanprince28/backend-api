@@ -3,10 +3,13 @@ import { PrismaService } from 'nestjs-prisma';
 import { CreateCustomerDto, UpdateCustomerDto } from './customer.dto';
 import { pickBy } from 'lodash';
 import { count } from 'console';
+import { RunningNumberGenerator } from 'src/common/utils';
 
 @Injectable()
 export class CustomerService {
-    constructor(private prisma: PrismaService) {}
+    constructor(private prisma: PrismaService,
+      private utilService:RunningNumberGenerator
+    ) {}
 
   async create(data: any) {
     // console.log(data);
@@ -14,7 +17,8 @@ export class CustomerService {
     if(customerData.id) {
       return this.updateCustomer(customerData, customerData.id);
     } else {
-      return this.addCustomer(customerData);
+      const generate_id = await this.utilService.generateUniqueNumber('CT');
+      return this.addCustomer({ ...customerData, generate_id: generate_id });
     }
   }
 

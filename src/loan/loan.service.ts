@@ -3,10 +3,14 @@ import { PrismaService } from 'nestjs-prisma';
 import { UpdateLoanDto } from './dto/update-loan.dto';
 import { addDays, addWeeks, addMonths, addYears, format } from 'date-fns';
 import { pickBy } from 'lodash';
+import { RunningNumberGenerator } from 'src/common/utils';
+
 
 @Injectable()
 export class LoanService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService,
+    private utilService:RunningNumberGenerator
+  ) {}
 
   generateUniqueAlphanumeric(length: number): string {
     const generatedStrings = new Set<string>();
@@ -67,7 +71,8 @@ export class LoanService {
   }
 
   async create(createLoanDto) {
-    const generateId = this.generateUniqueAlphanumeric(8);
+    const generateId = await this.utilService.generateUniqueNumber('LN');
+    console.log(generateId,'generatedid');
     // const calculateRepaymentDates = await this.calculateRepaymentDates(createLoanDto.repayment_date, createLoanDto.repayment_term, createLoanDto.unit_of_date);
     const calculateRepaymentDates = await this.getInstallmentDates(
       createLoanDto.repayment_date,
@@ -80,11 +85,10 @@ export class LoanService {
         generate_id: generateId,
         customer: { connect: { id: createLoanDto.customer_id } },
         user: { connect: { id: createLoanDto.supervisor } },
-        user_2: { connect: { id: createLoanDto.supervisor_2 } },
+        ...(createLoanDto.supervisor_2 && { user_2: { connect: { id: createLoanDto.supervisor_2 } } }),
         principal_amount: createLoanDto.principal_amount.toString(),
         deposit_amount: createLoanDto.deposit_amount.toString(),
         application_fee: createLoanDto.application_fee.toString(),
-        payment_up_front: createLoanDto.payment_up_front.toString(),
         unit_of_date: createLoanDto.unit_of_date.toString(),
         date_period: createLoanDto.date_period.toString(),
         repayment_term: createLoanDto.repayment_term.toString(),
@@ -100,7 +104,7 @@ export class LoanService {
 
     const installmentData = await Promise.all(
       calculateRepaymentDates.map(async (date, index) => {
-        const generateId = this.generateUniqueAlphanumeric(8);
+        const generateId = await this.utilService.generateUniqueNumber('IN');
         await this.prisma.installment.create({
           data: {
             generate_id: generateId,

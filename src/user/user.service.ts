@@ -3,10 +3,13 @@ import { pickBy } from 'lodash';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'nestjs-prisma';
 import * as bcrypt from 'bcrypt';
+import { RunningNumberGenerator } from 'src/common/utils';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService,
+      private utilService:RunningNumberGenerator
+  ) {}
 
   async findAll() {
     return this.prisma.user.findMany();
@@ -34,8 +37,11 @@ export class UserService {
 
   async createUser(payload): Promise<any> {
     const hashedPassword = await bcrypt.hash(payload.password, 10);
+    const generate_id = await this.utilService.generateUniqueNumber('US');
+    console.log(generate_id,'gen')
     return this.prisma.user.create({
       data: {
+        generate_id:generate_id,
         name: payload.name,
         email: payload.email,
         password: hashedPassword,

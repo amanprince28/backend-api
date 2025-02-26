@@ -48,6 +48,10 @@ export class CreateCustomerDto {
 
   @IsOptional()
   @IsString()
+  generate_id?: string;
+
+  @IsOptional()
+  @IsString()
   car_plate?: string;
   created_by: any;
 }
