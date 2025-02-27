@@ -150,7 +150,9 @@ enum Role {
   ADMIN
   LEAD
   AGENT
+  SUPER_ADMIN
 }
+
 
 model Tracker {
   id         Int    @id @default(autoincrement()) // Primary Key
