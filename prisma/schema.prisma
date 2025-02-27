@@ -109,6 +109,7 @@ model loan_share {
 }
 
 model payment {
+  generate_id     String?   @db.VarChar
   id              String       @id(map: "payment_pk") @default(uuid()) @db.Uuid
   type            String?      @db.VarChar
   installment_id  String?      @db.Uuid

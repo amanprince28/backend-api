@@ -3,15 +3,20 @@ import { PrismaService } from 'nestjs-prisma';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { connect } from 'http2';
+import { RunningNumberGenerator } from 'src/common/utils';
 
 @Injectable()
 export class PaymentService {
-    constructor(private prisma: PrismaService) {}
+    constructor(private prisma: PrismaService,
+      private utilService:RunningNumberGenerator
+    ) {}
 
   async create(createPaymentDto: any) {
     const createdPayments = [];
     for (let i = 0; i < createPaymentDto.length; i++) {
+      const generate_id = await this.utilService.generateUniqueNumber('PM');
       const payment = createPaymentDto[i];
+      payment['generate_id']=generate_id;
       if (payment.installment_id) {
         const _installment = await this.prisma.installment.findFirst({
           where: { id: payment.installment_id },
@@ -21,6 +26,7 @@ export class PaymentService {
         }
       }
       const newData: any = {
+        generate_id:payment.generate_id,
         type: payment.type || 'in',
         payment_date: payment.payment_date,
         amount: payment.amount,
