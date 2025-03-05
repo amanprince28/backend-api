@@ -25,11 +25,11 @@ model country {
 model customer {
   id               String     @id(map: "customer_pk") @default(uuid()) @db.Uuid
   email            String?    @db.VarChar(255)
-  generate_id      String?   @db.VarChar
+  generate_id      String?    @db.VarChar
   gender           String?    @db.VarChar(255)
-  ic               String?    @db.VarChar(255)
+  ic               String?    @db.VarChar(255) @unique
   name             String?    @db.VarChar(255)
-  passport         String?    @db.VarChar(255)
+  passport         String?    @db.VarChar(255) @unique
   race             String?    @db.VarChar(255)
   deleted_at       DateTime?
   bank_details     Json?
