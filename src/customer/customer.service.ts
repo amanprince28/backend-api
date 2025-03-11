@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateCustomerDto, UpdateCustomerDto } from './customer.dto';
 import { pickBy } from 'lodash';
@@ -12,6 +12,31 @@ export class CustomerService {
     ) {}
 
   async create(data: any) {
+
+    if (data.ic) {
+      const checkIC = await this.prisma.customer.findFirst({
+        where: {
+          ic: data.ic
+        }
+      });
+
+      if (checkIC) {
+        throw new BadRequestException('IC already exist');
+      }
+    }
+
+
+    if(data.passport) {
+      const checkPass = await this.prisma.customer.findFirst({
+        where: {
+          passport: data.passport
+        }
+      });
+      if (checkPass) {
+        throw new BadRequestException('Passport already exist');
+      }
+    }
+
     // console.log(data);
     const { bankDetails, ...customerData } = data;
     if(customerData.id) {
