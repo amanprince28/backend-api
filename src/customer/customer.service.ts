@@ -13,20 +13,20 @@ export class CustomerService {
 
   async create(data: any) {
 
-    if (data.ic) {
+    if (data.ic && !data.id) {
       const checkIC = await this.prisma.customer.findFirst({
         where: {
           ic: data.ic
         }
       });
 
-      if (checkIC) {
+      if (checkIC && !data.id) {
         throw new BadRequestException('IC already exist');
       }
     }
 
 
-    if(data.passport) {
+    if(data.passport && !data.id) {
       const checkPass = await this.prisma.customer.findFirst({
         where: {
           passport: data.passport
