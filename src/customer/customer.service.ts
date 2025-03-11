@@ -119,16 +119,7 @@ export class CustomerService {
     const { customer_relation, customer_address, company, bankDetails, ...customerData } = data;
     return this.prisma.customer.update({
       where: { id },
-      data: pickBy({
-        ...customerData,
-        customer_relation: customer_relation ? { create: customer_relation.map(relation => ({
-          ...relation,
-          address: relation.address ? { create: relation.address } : undefined
-        })) } : undefined,
-        customer_address: customer_address ? { create: customer_address } : undefined,
-        company: company ? { create: company } : undefined,
-        bank: bankDetails ? { create: bankDetails } : undefined
-      }),
+      data: data,
     });
   }
 
